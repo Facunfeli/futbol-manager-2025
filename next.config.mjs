@@ -13,10 +13,7 @@ const nextConfig = {
   output: 'export',
   trailingSlash: true,
   distDir: 'out',
-  // Desactivar características que no funcionan con export estático
-  experimental: {
-    appDir: true,
-  },
+  // Remover experimental.appDir que ya no es necesario en Next.js 14
 }
 
 export default nextConfig
