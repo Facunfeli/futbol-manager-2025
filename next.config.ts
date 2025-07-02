@@ -9,22 +9,13 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Configuración para Netlify
+  // Configuración para deployment estático
   output: 'export',
   trailingSlash: true,
   distDir: 'out',
-  // Optimizaciones
+  // Desactivar características que no funcionan con export estático
   experimental: {
-    optimizeCss: true,
-  },
-  // Configuración para rutas
-  async rewrites() {
-    return [
-      {
-        source: '/jugadores/:id',
-        destination: '/jugadores/[id]',
-      },
-    ]
+    appDir: true,
   },
 }
 

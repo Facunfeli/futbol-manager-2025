@@ -7,14 +7,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "export": "next build && next export"
+    "lint": "next lint"
   },
   "dependencies": {
     "next": "14.0.0",
     "react": "^18",
     "react-dom": "^18",
-    "@supabase/supabase-js": "^2.38.0",
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
@@ -33,7 +31,7 @@
     "eslint": "^8",
     "eslint-config-next": "14.0.0"
   },
-  "keywords": ["futbol", "deportes", "gestion", "equipos", "estadisticas", "nextjs", "netlify"],
+  "keywords": ["futbol", "deportes", "gestion", "equipos", "estadisticas", "nextjs"],
   "author": "Tu Nombre",
   "license": "MIT"
 }
