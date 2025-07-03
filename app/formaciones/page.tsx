@@ -1,8 +1,6 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function FormacionesPage() {
   const router = useRouter()
@@ -15,29 +13,32 @@ export default function FormacionesPage() {
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">🏆 Formaciones</h1>
           <p className="text-gray-600 mt-1">Selecciona la categoría para armar formaciones</p>
         </div>
-        <Button variant="outline" onClick={() => router.push("/")} className="flex items-center gap-2">
+        <button
+          onClick={() => router.push("/")}
+          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors"
+        >
           ← Volver al Dashboard
-        </Button>
+        </button>
       </div>
 
       {/* Category Selection */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
         {/* Categoría 2014 */}
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader className="text-center">
+        <div className="bg-white rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow">
+          <div className="p-6 text-center">
             <div className="text-4xl mb-2">🏆</div>
-            <CardTitle className="text-2xl">Formaciones 2014</CardTitle>
-            <CardDescription>Armador táctico para la categoría 2014</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+            <h2 className="text-2xl font-bold mb-2">Formaciones 2014</h2>
+            <p className="text-gray-600 mb-4">Armador táctico para la categoría 2014</p>
+          </div>
+          <div className="p-6 pt-0 space-y-4">
             <div className="grid grid-cols-2 gap-4 text-center">
               <div>
                 <div className="text-2xl font-bold text-blue-600">20</div>
-                <p className="text-sm text-muted-foreground">Jugadores disponibles</p>
+                <p className="text-sm text-gray-500">Jugadores disponibles</p>
               </div>
               <div>
                 <div className="text-2xl font-bold text-green-600">5</div>
-                <p className="text-sm text-muted-foreground">Formaciones guardadas</p>
+                <p className="text-sm text-gray-500">Formaciones guardadas</p>
               </div>
             </div>
 
@@ -56,28 +57,31 @@ export default function FormacionesPage() {
               </div>
             </div>
 
-            <Button className="w-full" onClick={() => router.push("/formaciones/2014")}>
+            <button
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors"
+              onClick={() => router.push("/formaciones/2014")}
+            >
               🏆 Armar Formación 2014
-            </Button>
-          </CardContent>
-        </Card>
+            </button>
+          </div>
+        </div>
 
         {/* Categoría 2015 */}
-        <Card className="hover:shadow-lg transition-shadow opacity-75">
-          <CardHeader className="text-center">
+        <div className="bg-white rounded-lg shadow-lg border border-gray-200 opacity-75">
+          <div className="p-6 text-center">
             <div className="text-4xl mb-2">🏆</div>
-            <CardTitle className="text-2xl">Formaciones 2015</CardTitle>
-            <CardDescription>Armador táctico para la categoría 2015</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+            <h2 className="text-2xl font-bold mb-2">Formaciones 2015</h2>
+            <p className="text-gray-600 mb-4">Armador táctico para la categoría 2015</p>
+          </div>
+          <div className="p-6 pt-0 space-y-4">
             <div className="grid grid-cols-2 gap-4 text-center">
               <div>
                 <div className="text-2xl font-bold text-gray-400">0</div>
-                <p className="text-sm text-muted-foreground">Jugadores</p>
+                <p className="text-sm text-gray-500">Jugadores</p>
               </div>
               <div>
                 <div className="text-2xl font-bold text-gray-400">0</div>
-                <p className="text-sm text-muted-foreground">Formaciones</p>
+                <p className="text-sm text-gray-500">Formaciones</p>
               </div>
             </div>
 
@@ -92,11 +96,11 @@ export default function FormacionesPage() {
               </div>
             </div>
 
-            <Button className="w-full" variant="secondary" disabled>
+            <button className="w-full bg-gray-400 text-white py-2 px-4 rounded cursor-not-allowed" disabled>
               🏆 Armar Formación 2015
-            </Button>
-          </CardContent>
-        </Card>
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Footer Info */}

@@ -2,8 +2,6 @@
 
 import Link from "next/link"
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 
 // Datos extendidos de jugadores con velocidad en 100m
 const jugadoresCompletos = [
@@ -255,244 +253,90 @@ export default function EstadisticasPage() {
     .sort((a, b) => Number.parseFloat(b.efectividad) - Number.parseFloat(a.efectividad))
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+    <div className="p-5 font-sans">
       {/* Header */}
-      <div style={{ marginBottom: "30px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-3">
           <div>
-            <h1 style={{ fontSize: "32px", color: "#333", margin: "0 0 10px 0" }}>📊 Gestión de Estadísticas</h1>
-            <p style={{ color: "#666", margin: 0 }}>Selecciona la categoría para ver análisis y reportes</p>
+            <h1 className="text-3xl text-gray-800 mb-2">📊 Estadísticas 2014</h1>
+            <p className="text-gray-600">Análisis completo de rendimiento de la categoría 2014</p>
           </div>
           <Link
-            href="/"
-            style={{
-              backgroundColor: "#6c757d",
-              color: "white",
-              padding: "10px 20px",
-              textDecoration: "none",
-              borderRadius: "4px",
-              fontSize: "14px",
-            }}
+            href="/estadisticas"
+            className="bg-gray-500 text-white px-5 py-2 rounded text-sm no-underline hover:bg-gray-600"
           >
-            ← Volver al Dashboard
+            ← Volver a Estadísticas
           </Link>
         </div>
       </div>
 
-      {/* Selección de Categorías */}
-      <div
-        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "30px", maxWidth: "800px", margin: "0 auto" }}
-      >
-        {/* Categoría 2014 */}
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-blue-200">
-          <CardHeader className="text-center pb-4">
-            <div style={{ fontSize: "48px", marginBottom: "10px" }}>📊</div>
-            <CardTitle className="text-2xl text-blue-700">Estadísticas 2014</CardTitle>
-            <CardDescription className="text-lg">Análisis categoría 2014</CardDescription>
-          </CardHeader>
-          <CardContent className="text-center space-y-4">
-            <div
-              style={{
-                backgroundColor: "#e3f2fd",
-                padding: "20px",
-                borderRadius: "8px",
-                border: "1px solid #bbdefb",
-              }}
-            >
-              <div style={{ fontSize: "36px", fontWeight: "bold", color: "#1976d2" }}>6</div>
-              <div style={{ fontSize: "14px", color: "#666" }}>Partidos analizados</div>
-            </div>
-
-            <div style={{ fontSize: "14px", color: "#666", padding: "10px" }}>
-              <p>📊 Estadísticas completas</p>
-              <p>🏃‍♂️ Rankings de velocidad</p>
-              <p>⚽ Top goleadores</p>
-              <p>🏆 Análisis por formación</p>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              <Link href="/estadisticas/2014" style={{ textDecoration: "none" }}>
-                <Button className="w-full" size="lg">
-                  📊 Ver Estadísticas 2014
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Categoría 2015 */}
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-green-200">
-          <CardHeader className="text-center pb-4">
-            <div style={{ fontSize: "48px", marginBottom: "10px" }}>📊</div>
-            <CardTitle className="text-2xl text-green-700">Estadísticas 2015</CardTitle>
-            <CardDescription className="text-lg">Análisis categoría 2015</CardDescription>
-          </CardHeader>
-          <CardContent className="text-center space-y-4">
-            <div
-              style={{
-                backgroundColor: "#f1f8e9",
-                padding: "20px",
-                borderRadius: "8px",
-                border: "1px solid #c8e6c9",
-              }}
-            >
-              <div style={{ fontSize: "36px", fontWeight: "bold", color: "#388e3c" }}>0</div>
-              <div style={{ fontSize: "14px", color: "#666" }}>Datos disponibles</div>
-            </div>
-
-            <div
-              style={{
-                backgroundColor: "#fff3e0",
-                padding: "15px",
-                borderRadius: "8px",
-                border: "1px solid #ffcc02",
-                fontSize: "14px",
-                color: "#e65100",
-              }}
-            >
-              ⚠️ <strong>Próximamente</strong>
-              <br />
-              Datos en preparación
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              <Button className="w-full" size="lg" disabled style={{ backgroundColor: "#e0e0e0", color: "#9e9e9e" }}>
-                📊 Ver Estadísticas 2015
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Información adicional */}
-      <div
-        style={{
-          marginTop: "40px",
-          textAlign: "center",
-          backgroundColor: "#f8f9fa",
-          padding: "20px",
-          borderRadius: "8px",
-          border: "1px solid #dee2e6",
-        }}
-      >
-        <h3 style={{ margin: "0 0 10px 0", color: "#333" }}>📊 Centro de Análisis</h3>
-        <p style={{ margin: "0 0 15px 0", color: "#666", fontSize: "14px" }}>
-          Análisis detallado del rendimiento individual y del equipo por categoría.
-        </p>
-        <div style={{ display: "flex", justifyContent: "center", gap: "20px", fontSize: "12px", color: "#666" }}>
-          <div>✅ Categoría 2014: Datos completos</div>
-          <div>⏳ Categoría 2015: En preparación</div>
-        </div>
+      {/* Navegación de pestañas */}
+      <div className="flex gap-2 mb-6 border-b border-gray-200">
+        {[
+          { id: "general", label: "📊 General", icon: "📊" },
+          { id: "jugadores", label: "👥 Jugadores", icon: "👥" },
+          { id: "posiciones", label: "⚽ Por Posición", icon: "⚽" },
+          { id: "formaciones", label: "🏆 Formaciones", icon: "🏆" },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setVistaActiva(tab.id)}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              vistaActiva === tab.id
+                ? "border-blue-500 text-blue-600 bg-blue-50"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* Contenido según pestaña activa */}
       {vistaActiva === "general" && (
         <div>
           {/* Resumen General */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-              gap: "20px",
-              marginBottom: "30px",
-            }}
-          >
-            <div
-              style={{
-                backgroundColor: "white",
-                padding: "20px",
-                borderRadius: "8px",
-                border: "1px solid #ddd",
-                textAlign: "center",
-              }}
-            >
-              <h3 style={{ margin: "0 0 10px 0", color: "#333" }}>⚽ Total Goles</h3>
-              <div style={{ fontSize: "32px", fontWeight: "bold", color: "#28a745" }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+            <div className="bg-white p-5 rounded-lg border border-gray-200 text-center">
+              <h3 className="mb-2 text-gray-800">⚽ Total Goles</h3>
+              <div className="text-3xl font-bold text-green-600">
                 {jugadoresCompletos.reduce((sum, j) => sum + j.goles, 0)}
               </div>
             </div>
-            <div
-              style={{
-                backgroundColor: "white",
-                padding: "20px",
-                borderRadius: "8px",
-                border: "1px solid #ddd",
-                textAlign: "center",
-              }}
-            >
-              <h3 style={{ margin: "0 0 10px 0", color: "#333" }}>🏃‍♂️ Más Rápido</h3>
-              <div style={{ fontSize: "20px", fontWeight: "bold", color: "#007bff" }}>
-                {masRapidos[0]?.velocidad_100m}s
-              </div>
-              <div style={{ fontSize: "12px", color: "#666" }}>{masRapidos[0]?.nombre.split(" ")[0]}</div>
+            <div className="bg-white p-5 rounded-lg border border-gray-200 text-center">
+              <h3 className="mb-2 text-gray-800">🏃‍♂️ Más Rápido</h3>
+              <div className="text-xl font-bold text-blue-600">{masRapidos[0]?.velocidad_100m}s</div>
+              <div className="text-xs text-gray-600">{masRapidos[0]?.nombre.split(" ")[0]}</div>
             </div>
-            <div
-              style={{
-                backgroundColor: "white",
-                padding: "20px",
-                borderRadius: "8px",
-                border: "1px solid #ddd",
-                textAlign: "center",
-              }}
-            >
-              <h3 style={{ margin: "0 0 10px 0", color: "#333" }}>🟨 Tarjetas</h3>
-              <div style={{ fontSize: "32px", fontWeight: "bold", color: "#ffc107" }}>
+            <div className="bg-white p-5 rounded-lg border border-gray-200 text-center">
+              <h3 className="mb-2 text-gray-800">🟨 Tarjetas</h3>
+              <div className="text-3xl font-bold text-yellow-500">
                 {jugadoresCompletos.reduce((sum, j) => sum + j.amarillas, 0)}
               </div>
             </div>
-            <div
-              style={{
-                backgroundColor: "white",
-                padding: "20px",
-                borderRadius: "8px",
-                border: "1px solid #ddd",
-                textAlign: "center",
-              }}
-            >
-              <h3 style={{ margin: "0 0 10px 0", color: "#333" }}>🏆 Mejor Formación</h3>
-              <div style={{ fontSize: "20px", fontWeight: "bold", color: "#6f42c1" }}>
-                {estadisticasFormacion[0]?.formacion}
-              </div>
-              <div style={{ fontSize: "12px", color: "#666" }}>
-                {estadisticasFormacion[0]?.efectividad}% efectividad
-              </div>
+            <div className="bg-white p-5 rounded-lg border border-gray-200 text-center">
+              <h3 className="mb-2 text-gray-800">🏆 Mejor Formación</h3>
+              <div className="text-xl font-bold text-purple-600">{estadisticasFormacion[0]?.formacion}</div>
+              <div className="text-xs text-gray-600">{estadisticasFormacion[0]?.efectividad}% efectividad</div>
             </div>
           </div>
 
           {/* Top Goleadores */}
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "20px",
-              borderRadius: "8px",
-              border: "1px solid #ddd",
-              marginBottom: "20px",
-            }}
-          >
-            <h3 style={{ margin: "0 0 20px 0", color: "#333" }}>🥇 Top Goleadores</h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <div className="bg-white p-5 rounded-lg border border-gray-200 mb-5">
+            <h3 className="mb-5 text-gray-800">🥇 Top Goleadores</h3>
+            <div className="space-y-3">
               {topGoleadores.map((jugador, index) => (
-                <div
-                  key={jugador.id}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "15px",
-                    padding: "10px",
-                    backgroundColor: "#f8f9fa",
-                    borderRadius: "8px",
-                  }}
-                >
-                  <div style={{ fontSize: "20px", fontWeight: "bold", color: "#ffc107", minWidth: "30px" }}>
+                <div key={jugador.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                  <div className="text-xl font-bold text-yellow-500 min-w-8">
                     {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `${index + 1}°`}
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: "bold" }}>{jugador.nombre}</div>
-                    <div style={{ fontSize: "12px", color: "#666" }}>{jugador.posicion}</div>
+                  <div className="flex-1">
+                    <div className="font-bold">{jugador.nombre}</div>
+                    <div className="text-xs text-gray-600">{jugador.posicion}</div>
                   </div>
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: "24px", fontWeight: "bold", color: "#28a745" }}>{jugador.goles}</div>
-                    <div style={{ fontSize: "12px", color: "#666" }}>goles</div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-600">{jugador.goles}</div>
+                    <div className="text-xs text-gray-600">goles</div>
                   </div>
                 </div>
               ))}
@@ -504,45 +348,23 @@ export default function EstadisticasPage() {
       {vistaActiva === "jugadores" && (
         <div>
           {/* Más Partidos Jugados */}
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "20px",
-              borderRadius: "8px",
-              border: "1px solid #ddd",
-              marginBottom: "20px",
-            }}
-          >
-            <h3 style={{ margin: "0 0 20px 0", color: "#333" }}>🏃‍♂️ Más Partidos Jugados</h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <div className="bg-white p-5 rounded-lg border border-gray-200 mb-5">
+            <h3 className="mb-5 text-gray-800">🏃‍♂️ Más Partidos Jugados</h3>
+            <div className="space-y-3">
               {masPartidos.map((jugador, index) => (
-                <div
-                  key={jugador.id}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "15px",
-                    padding: "10px",
-                    backgroundColor: "#f8f9fa",
-                    borderRadius: "8px",
-                  }}
-                >
-                  <div style={{ fontSize: "20px", fontWeight: "bold", color: "#007bff", minWidth: "30px" }}>
-                    {index + 1}°
+                <div key={jugador.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                  <div className="text-xl font-bold text-blue-600 min-w-8">{index + 1}°</div>
+                  <div className="flex-1">
+                    <div className="font-bold">{jugador.nombre}</div>
+                    <div className="text-xs text-gray-600">{jugador.posicion}</div>
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: "bold" }}>{jugador.nombre}</div>
-                    <div style={{ fontSize: "12px", color: "#666" }}>{jugador.posicion}</div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">{jugador.partidos}</div>
+                    <div className="text-xs text-gray-600">partidos</div>
                   </div>
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: "24px", fontWeight: "bold", color: "#007bff" }}>{jugador.partidos}</div>
-                    <div style={{ fontSize: "12px", color: "#666" }}>partidos</div>
-                  </div>
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: "16px", fontWeight: "bold", color: "#6c757d" }}>
-                      {jugador.minutos_totales}
-                    </div>
-                    <div style={{ fontSize: "12px", color: "#666" }}>minutos</div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-gray-600">{jugador.minutos_totales}</div>
+                    <div className="text-xs text-gray-600">minutos</div>
                   </div>
                 </div>
               ))}
@@ -550,33 +372,19 @@ export default function EstadisticasPage() {
           </div>
 
           {/* Jugadores Más Rápidos */}
-          <div style={{ backgroundColor: "white", padding: "20px", borderRadius: "8px", border: "1px solid #ddd" }}>
-            <h3 style={{ margin: "0 0 20px 0", color: "#333" }}>⚡ Ranking de Velocidad (100m)</h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <div className="bg-white p-5 rounded-lg border border-gray-200">
+            <h3 className="mb-5 text-gray-800">⚡ Ranking de Velocidad (100m)</h3>
+            <div className="space-y-3">
               {masRapidos.map((jugador, index) => (
-                <div
-                  key={jugador.id}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "15px",
-                    padding: "10px",
-                    backgroundColor: "#f8f9fa",
-                    borderRadius: "8px",
-                  }}
-                >
-                  <div style={{ fontSize: "20px", fontWeight: "bold", color: "#dc3545", minWidth: "30px" }}>
-                    {index === 0 ? "🏃‍♂️" : `${index + 1}°`}
+                <div key={jugador.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                  <div className="text-xl font-bold text-red-600 min-w-8">{index === 0 ? "🏃‍♂️" : `${index + 1}°`}</div>
+                  <div className="flex-1">
+                    <div className="font-bold">{jugador.nombre}</div>
+                    <div className="text-xs text-gray-600">{jugador.posicion}</div>
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: "bold" }}>{jugador.nombre}</div>
-                    <div style={{ fontSize: "12px", color: "#666" }}>{jugador.posicion}</div>
-                  </div>
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: "24px", fontWeight: "bold", color: "#dc3545" }}>
-                      {jugador.velocidad_100m}s
-                    </div>
-                    <div style={{ fontSize: "12px", color: "#666" }}>100 metros</div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-red-600">{jugador.velocidad_100m}s</div>
+                    <div className="text-xs text-gray-600">100 metros</div>
                   </div>
                 </div>
               ))}
@@ -586,35 +394,17 @@ export default function EstadisticasPage() {
       )}
 
       {vistaActiva === "posiciones" && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "20px" }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {Object.entries(estadisticasPorPosicion).map(([posicion, jugadores]) => (
-            <div
-              key={posicion}
-              style={{ backgroundColor: "white", padding: "20px", borderRadius: "8px", border: "1px solid #ddd" }}
-            >
-              <h3
-                style={{
-                  margin: "0 0 15px 0",
-                  color: getPosicionColor(posicion),
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
-              >
-                <div
-                  style={{
-                    width: "20px",
-                    height: "20px",
-                    borderRadius: "50%",
-                    backgroundColor: getPosicionColor(posicion),
-                  }}
-                ></div>
+            <div key={posicion} className="bg-white p-5 rounded-lg border border-gray-200">
+              <h3 className="mb-4 flex items-center gap-3" style={{ color: getPosicionColor(posicion) }}>
+                <div className="w-5 h-5 rounded-full" style={{ backgroundColor: getPosicionColor(posicion) }}></div>
                 {posicion}S ({jugadores.length})
               </h3>
 
-              <div style={{ marginBottom: "15px" }}>
-                <div style={{ fontSize: "14px", color: "#666", marginBottom: "5px" }}>Estadísticas Generales:</div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", fontSize: "12px" }}>
+              <div className="mb-4">
+                <div className="text-sm text-gray-600 mb-2">Estadísticas Generales:</div>
+                <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>• Partidos: {jugadores.reduce((sum, j) => sum + j.partidos, 0)}</div>
                   <div>• Goles: {jugadores.reduce((sum, j) => sum + j.goles, 0)}</div>
                   <div>• Tarjetas: {jugadores.reduce((sum, j) => sum + j.amarillas, 0)}</div>
@@ -623,13 +413,13 @@ export default function EstadisticasPage() {
               </div>
 
               <div>
-                <div style={{ fontSize: "14px", color: "#666", marginBottom: "10px" }}>Más Destacado:</div>
+                <div className="text-sm text-gray-600 mb-3">Más Destacado:</div>
                 {jugadores.length > 0 && (
-                  <div style={{ padding: "10px", backgroundColor: "#f8f9fa", borderRadius: "4px" }}>
-                    <div style={{ fontWeight: "bold", fontSize: "14px" }}>
+                  <div className="p-3 bg-gray-50 rounded">
+                    <div className="font-bold text-sm">
                       {jugadores.sort((a, b) => b.partidos + b.goles - (a.partidos + a.goles))[0]?.nombre}
                     </div>
-                    <div style={{ fontSize: "12px", color: "#666" }}>
+                    <div className="text-xs text-gray-600">
                       {jugadores.sort((a, b) => b.partidos + b.goles - (a.partidos + a.goles))[0]?.partidos} partidos,{" "}
                       {jugadores.sort((a, b) => b.partidos + b.goles - (a.partidos + a.goles))[0]?.goles} goles
                     </div>
@@ -643,73 +433,44 @@ export default function EstadisticasPage() {
 
       {vistaActiva === "formaciones" && (
         <div>
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "20px",
-              borderRadius: "8px",
-              border: "1px solid #ddd",
-              marginBottom: "20px",
-            }}
-          >
-            <h3 style={{ margin: "0 0 20px 0", color: "#333" }}>🏆 Efectividad por Formación</h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+          <div className="bg-white p-5 rounded-lg border border-gray-200 mb-5">
+            <h3 className="mb-5 text-gray-800">🏆 Efectividad por Formación</h3>
+            <div className="space-y-4">
               {estadisticasFormacion.map((stat, index) => (
-                <div
-                  key={stat.formacion}
-                  style={{
-                    padding: "20px",
-                    backgroundColor: "#f8f9fa",
-                    borderRadius: "8px",
-                    border: "1px solid #dee2e6",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "15px",
-                    }}
-                  >
+                <div key={stat.formacion} className="p-5 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="flex justify-between items-center mb-4">
                     <div>
-                      <h4 style={{ margin: "0", color: "#333", fontSize: "18px" }}>{stat.formacion}</h4>
-                      <div style={{ fontSize: "14px", color: "#666" }}>{stat.total} partidos jugados</div>
+                      <h4 className="text-lg font-semibold text-gray-800">{stat.formacion}</h4>
+                      <div className="text-sm text-gray-600">{stat.total} partidos jugados</div>
                     </div>
-                    <div style={{ textAlign: "center" }}>
-                      <div style={{ fontSize: "24px", fontWeight: "bold", color: index === 0 ? "#28a745" : "#007bff" }}>
+                    <div className="text-center">
+                      <div className={`text-2xl font-bold ${index === 0 ? "text-green-600" : "text-blue-600"}`}>
                         {stat.efectividad}%
                       </div>
-                      <div style={{ fontSize: "12px", color: "#666" }}>efectividad</div>
+                      <div className="text-xs text-gray-600">efectividad</div>
                     </div>
                   </div>
 
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
-                      gap: "15px",
-                    }}
-                  >
-                    <div style={{ textAlign: "center" }}>
-                      <div style={{ fontSize: "20px", fontWeight: "bold", color: "#28a745" }}>{stat.victorias}</div>
-                      <div style={{ fontSize: "12px", color: "#666" }}>Victorias</div>
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-green-600">{stat.victorias}</div>
+                      <div className="text-xs text-gray-600">Victorias</div>
                     </div>
-                    <div style={{ textAlign: "center" }}>
-                      <div style={{ fontSize: "20px", fontWeight: "bold", color: "#ffc107" }}>{stat.empates}</div>
-                      <div style={{ fontSize: "12px", color: "#666" }}>Empates</div>
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-yellow-500">{stat.empates}</div>
+                      <div className="text-xs text-gray-600">Empates</div>
                     </div>
-                    <div style={{ textAlign: "center" }}>
-                      <div style={{ fontSize: "20px", fontWeight: "bold", color: "#dc3545" }}>{stat.derrotas}</div>
-                      <div style={{ fontSize: "12px", color: "#666" }}>Derrotas</div>
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-red-600">{stat.derrotas}</div>
+                      <div className="text-xs text-gray-600">Derrotas</div>
                     </div>
-                    <div style={{ textAlign: "center" }}>
-                      <div style={{ fontSize: "20px", fontWeight: "bold", color: "#007bff" }}>{stat.goles_favor}</div>
-                      <div style={{ fontSize: "12px", color: "#666" }}>Goles a favor</div>
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-blue-600">{stat.goles_favor}</div>
+                      <div className="text-xs text-gray-600">Goles a favor</div>
                     </div>
-                    <div style={{ textAlign: "center" }}>
-                      <div style={{ fontSize: "20px", fontWeight: "bold", color: "#6c757d" }}>{stat.goles_contra}</div>
-                      <div style={{ fontSize: "12px", color: "#666" }}>Goles en contra</div>
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-gray-600">{stat.goles_contra}</div>
+                      <div className="text-xs text-gray-600">Goles en contra</div>
                     </div>
                   </div>
                 </div>
@@ -717,11 +478,9 @@ export default function EstadisticasPage() {
             </div>
           </div>
 
-          <div
-            style={{ backgroundColor: "#e7f3ff", padding: "20px", borderRadius: "8px", border: "1px solid #b3d9ff" }}
-          >
-            <h4 style={{ margin: "0 0 10px 0", color: "#0066cc" }}>💡 Recomendación Táctica</h4>
-            <p style={{ margin: 0, color: "#0066cc" }}>
+          <div className="bg-blue-50 p-5 rounded-lg border border-blue-200">
+            <h4 className="mb-2 text-blue-800">💡 Recomendación Táctica</h4>
+            <p className="text-blue-800">
               Basado en los resultados, la formación <strong>{estadisticasFormacion[0]?.formacion}</strong> ha sido la
               más efectiva con un {estadisticasFormacion[0]?.efectividad}% de efectividad. Considera usarla en partidos
               importantes.

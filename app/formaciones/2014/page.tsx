@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
 
 // Datos de jugadores disponibles
 const jugadoresDisponibles2014 = [
@@ -146,7 +145,7 @@ export default function Formaciones2014Page() {
           <p className="text-gray-600">Arma tu formación táctica para la categoría 2014</p>
         </div>
         <Link href="/formaciones">
-          <Button variant="outline">← Volver a Formaciones</Button>
+          <button className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">← Volver a Formaciones</button>
         </Link>
       </div>
 
@@ -173,9 +172,12 @@ export default function Formaciones2014Page() {
               </select>
             </div>
 
-            <Button onClick={limpiarFormacion} variant="destructive" size="sm">
+            <button
+              onClick={limpiarFormacion}
+              className="bg-red-600 text-white px-3 py-2 rounded text-sm hover:bg-red-700"
+            >
               🗑️ Limpiar
-            </Button>
+            </button>
 
             <div className="ml-auto text-sm text-gray-600">Jugadores: {Object.keys(jugadoresEnCancha).length}/11</div>
           </div>
@@ -276,11 +278,19 @@ export default function Formaciones2014Page() {
               onChange={(e) => setNombreFormacion(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm mb-3"
             />
-            <Button onClick={guardarFormacion} disabled={Object.keys(jugadoresEnCancha).length < 11} className="w-full">
+            <button
+              onClick={guardarFormacion}
+              disabled={Object.keys(jugadoresEnCancha).length < 11}
+              className={`w-full py-2 px-4 rounded ${
+                Object.keys(jugadoresEnCancha).length < 11
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              } text-white`}
+            >
               {Object.keys(jugadoresEnCancha).length < 11
                 ? `Faltan ${11 - Object.keys(jugadoresEnCancha).length} jugadores`
                 : "💾 Guardar Formación"}
-            </Button>
+            </button>
 
             {formacionGuardada && (
               <div className="mt-3 p-2 bg-green-100 text-green-800 rounded text-sm text-center">
