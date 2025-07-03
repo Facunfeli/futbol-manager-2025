@@ -9,11 +9,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Configuración para deployment estático
   output: 'export',
   trailingSlash: true,
-  distDir: 'out',
-  // Remover experimental.appDir que ya no es necesario en Next.js 14
+  distDir: 'out'
 }
 
 export default nextConfig
