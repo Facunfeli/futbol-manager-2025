@@ -1,313 +1,327 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
-// Datos de jugadores disponibles
-const jugadoresDisponibles2014 = [
-  { id: 1, nombre: "ZARATE MARTIN", posicion: "DEFENSOR", numero: 2 },
-  { id: 2, nombre: "AMARILLO MARTIN", posicion: "DEFENSOR", numero: 3 },
-  { id: 3, nombre: "ALVAREZ LORENZO", posicion: "DEFENSOR", numero: 4 },
-  { id: 4, nombre: "BREY FEDERICO", posicion: "DEFENSOR", numero: 5 },
-  { id: 5, nombre: "BENITEZ BENJAMIN", posicion: "ARQUERO", numero: 1 },
-  { id: 6, nombre: "CABALLERO THIAGO", posicion: "VOLANTE", numero: 6 },
-  { id: 7, nombre: "LOZANO LORENZO", posicion: "DEFENSOR", numero: 7 },
-  { id: 8, nombre: "DORADO MATEO", posicion: "VOLANTE", numero: 8 },
-  { id: 9, nombre: "CATALAN FRANCO", posicion: "DELANTERO", numero: 9 },
-  { id: 10, nombre: "OCHOA ALEJO", posicion: "DELANTERO", numero: 10 },
-  { id: 11, nombre: "TORRES THIAGO", posicion: "DELANTERO", numero: 11 },
-  { id: 12, nombre: "SOSA CIRO", posicion: "DELANTERO", numero: 12 },
-  { id: 13, nombre: "ZABALA BENICIO", posicion: "VOLANTE", numero: 13 },
-  { id: 14, nombre: "UMAÑO SIMON", posicion: "VOLANTE", numero: 14 },
-  { id: 15, nombre: "ORTIZ CIRILO AARON", posicion: "VOLANTE", numero: 15 },
-]
-
-// Esquemas tácticos predefinidos
-const esquemasTacticos = {
-  "4-4-2": {
-    nombre: "4-4-2 Clásico",
-    posiciones: [
-      { id: "arquero", x: 50, y: 90, label: "ARQ" },
-      { id: "def1", x: 20, y: 70, label: "DI" },
-      { id: "def2", x: 40, y: 75, label: "DC" },
-      { id: "def3", x: 60, y: 75, label: "DC" },
-      { id: "def4", x: 80, y: 70, label: "DD" },
-      { id: "vol1", x: 20, y: 45, label: "VI" },
-      { id: "vol2", x: 40, y: 50, label: "MC" },
-      { id: "vol3", x: 60, y: 50, label: "MC" },
-      { id: "vol4", x: 80, y: 45, label: "VD" },
-      { id: "del1", x: 35, y: 20, label: "DC" },
-      { id: "del2", x: 65, y: 20, label: "DC" },
-    ],
-  },
-  "4-3-3": {
-    nombre: "4-3-3 Ofensivo",
-    posiciones: [
-      { id: "arquero", x: 50, y: 90, label: "ARQ" },
-      { id: "def1", x: 20, y: 70, label: "DI" },
-      { id: "def2", x: 40, y: 75, label: "DC" },
-      { id: "def3", x: 60, y: 75, label: "DC" },
-      { id: "def4", x: 80, y: 70, label: "DD" },
-      { id: "vol1", x: 30, y: 50, label: "MC" },
-      { id: "vol2", x: 50, y: 45, label: "MC" },
-      { id: "vol3", x: 70, y: 50, label: "MC" },
-      { id: "del1", x: 25, y: 20, label: "EI" },
-      { id: "del2", x: 50, y: 15, label: "DC" },
-      { id: "del3", x: 75, y: 20, label: "ED" },
-    ],
-  },
-  "3-5-2": {
-    nombre: "3-5-2 Equilibrado",
-    posiciones: [
-      { id: "arquero", x: 50, y: 90, label: "ARQ" },
-      { id: "def1", x: 30, y: 75, label: "DC" },
-      { id: "def2", x: 50, y: 80, label: "LIB" },
-      { id: "def3", x: 70, y: 75, label: "DC" },
-      { id: "vol1", x: 15, y: 50, label: "CI" },
-      { id: "vol2", x: 35, y: 45, label: "MC" },
-      { id: "vol3", x: 50, y: 40, label: "MC" },
-      { id: "vol4", x: 65, y: 45, label: "MC" },
-      { id: "vol5", x: 85, y: 50, label: "CD" },
-      { id: "del1", x: 40, y: 20, label: "DC" },
-      { id: "del2", x: 60, y: 20, label: "DC" },
-    ],
-  },
+interface Jugador {
+  id: number
+  nombre: string
+  posicion: string
+  partidos: number
+  goles: number
+  amarillas: number
+  rojas: number
 }
 
-const getPosicionColor = (posicion: string) => {
-  switch (posicion) {
-    case "ARQUERO":
-      return "#ffc107"
-    case "DEFENSOR":
-      return "#007bff"
-    case "VOLANTE":
-      return "#28a745"
-    case "DELANTERO":
-      return "#dc3545"
-    default:
-      return "#6c757d"
-  }
+interface EstadisticasEquipo {
+  totalPartidos: number
+  victorias: number
+  empates: number
+  derrotas: number
+  golesAFavor: number
+  golesEnContra: number
 }
 
-export default function Formaciones2014Page() {
-  const [esquemaSeleccionado, setEsquemaSeleccionado] = useState<keyof typeof esquemasTacticos>("4-4-2")
-  const [jugadoresEnCancha, setJugadoresEnCancha] = useState<{ [key: string]: any }>({})
-  const [nombreFormacion, setNombreFormacion] = useState("")
-  const [formacionGuardada, setFormacionGuardada] = useState(false)
+export default function Estadisticas2014Page() {
+  const [jugadores, setJugadores] = useState<Jugador[]>([])
+  const [estadisticasEquipo, setEstadisticasEquipo] = useState<EstadisticasEquipo>({
+    totalPartidos: 0,
+    victorias: 0,
+    empates: 0,
+    derrotas: 0,
+    golesAFavor: 0,
+    golesEnContra: 0,
+  })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const esquemaActual = esquemasTacticos[esquemaSeleccionado]
+  useEffect(() => {
+    cargarEstadisticas()
+  }, [])
 
-  const asignarJugador = (posicionId: string, jugador: any) => {
-    setJugadoresEnCancha((prev) => ({
-      ...prev,
-      [posicionId]: jugador,
-    }))
-  }
+  const cargarEstadisticas = async () => {
+    try {
+      setLoading(true)
+      const [jugadoresRes, estadisticasRes] = await Promise.all([fetch("/api/jugadores"), fetch("/api/estadisticas")])
 
-  const removerJugador = (posicionId: string) => {
-    setJugadoresEnCancha((prev) => {
-      const nuevo = { ...prev }
-      delete nuevo[posicionId]
-      return nuevo
-    })
-  }
+      if (!jugadoresRes.ok || !estadisticasRes.ok) {
+        throw new Error("Error cargando estadísticas")
+      }
 
-  const limpiarFormacion = () => {
-    setJugadoresEnCancha({})
-  }
+      const jugadoresData = await jugadoresRes.json()
+      const estadisticasData = await estadisticasRes.json()
 
-  const guardarFormacion = () => {
-    if (!nombreFormacion.trim()) {
-      alert("Por favor ingresa un nombre para la formación")
-      return
+      setJugadores(jugadoresData)
+      setEstadisticasEquipo(estadisticasData)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error desconocido")
+    } finally {
+      setLoading(false)
     }
-
-    const posicionesOcupadas = Object.keys(jugadoresEnCancha).length
-    if (posicionesOcupadas < 11) {
-      alert(`Faltan ${11 - posicionesOcupadas} jugadores para completar la formación`)
-      return
-    }
-
-    // Aquí guardarías en la base de datos
-    setFormacionGuardada(true)
-    setTimeout(() => setFormacionGuardada(false), 3000)
   }
 
-  const jugadoresUsados = Object.values(jugadoresEnCancha).map((j: any) => j?.id)
-  const jugadoresLibres = jugadoresDisponibles2014.filter((j) => !jugadoresUsados.includes(j.id))
+  const getPosicionColor = (posicion: string) => {
+    switch (posicion) {
+      case "ARQUERO":
+        return "bg-yellow-100 text-yellow-800"
+      case "DEFENSOR":
+        return "bg-blue-100 text-blue-800"
+      case "VOLANTE":
+        return "bg-green-100 text-green-800"
+      case "DELANTERO":
+        return "bg-red-100 text-red-800"
+      default:
+        return "bg-gray-100 text-gray-800"
+    }
+  }
+
+  const goleadores = jugadores
+    .filter((j) => j.goles > 0)
+    .sort((a, b) => b.goles - a.goles)
+    .slice(0, 5)
+
+  const masPartidos = jugadores.sort((a, b) => b.partidos - a.partidos).slice(0, 5)
+
+  const tarjeteros = jugadores
+    .filter((j) => j.amarillas > 0 || j.rojas > 0)
+    .sort((a, b) => b.amarillas + b.rojas * 2 - (a.amarillas + a.rojas * 2))
+    .slice(0, 5)
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando estadísticas...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="text-red-600 text-6xl mb-4">⚠️</div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Error al cargar estadísticas</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={cargarEstadisticas}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">🏆 Formaciones 2014</h1>
-          <p className="text-gray-600">Arma tu formación táctica para la categoría 2014</p>
+          <h1 className="text-3xl font-bold text-gray-900">📊 Estadísticas 2014</h1>
+          <p className="text-gray-600">Estadísticas completas de la categoría 2014</p>
         </div>
-        <Link href="/formaciones">
-          <button className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">← Volver a Formaciones</button>
-        </Link>
+        <div className="flex gap-3">
+          <button
+            onClick={cargarEstadisticas}
+            className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors"
+          >
+            🔄 Actualizar
+          </button>
+          <Link href="/estadisticas">
+            <button className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors">
+              ← Volver
+            </button>
+          </Link>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Cancha de Fútbol */}
-        <div className="lg:col-span-2">
-          {/* Controles */}
-          <div className="flex flex-wrap gap-4 items-center mb-6 p-4 bg-gray-50 rounded-lg">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Esquema Táctico:</label>
-              <select
-                value={esquemaSeleccionado}
-                onChange={(e) => {
-                  setEsquemaSeleccionado(e.target.value as keyof typeof esquemasTacticos)
-                  setJugadoresEnCancha({})
-                }}
-                className="px-3 py-2 border border-gray-300 rounded-md text-sm"
-              >
-                {Object.entries(esquemasTacticos).map(([key, esquema]) => (
-                  <option key={key} value={key}>
-                    {esquema.nombre}
-                  </option>
-                ))}
-              </select>
-            </div>
+      {/* Estadísticas del Equipo */}
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+        <div className="bg-white p-4 rounded-lg shadow border text-center">
+          <div className="text-2xl font-bold text-blue-600">{estadisticasEquipo.totalPartidos}</div>
+          <div className="text-sm text-gray-600">Partidos</div>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow border text-center">
+          <div className="text-2xl font-bold text-green-600">{estadisticasEquipo.victorias}</div>
+          <div className="text-sm text-gray-600">Victorias</div>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow border text-center">
+          <div className="text-2xl font-bold text-yellow-600">{estadisticasEquipo.empates}</div>
+          <div className="text-sm text-gray-600">Empates</div>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow border text-center">
+          <div className="text-2xl font-bold text-red-600">{estadisticasEquipo.derrotas}</div>
+          <div className="text-sm text-gray-600">Derrotas</div>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow border text-center">
+          <div className="text-2xl font-bold text-blue-600">{estadisticasEquipo.golesAFavor}</div>
+          <div className="text-sm text-gray-600">Goles a Favor</div>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow border text-center">
+          <div className="text-2xl font-bold text-gray-600">{estadisticasEquipo.golesEnContra}</div>
+          <div className="text-sm text-gray-600">Goles en Contra</div>
+        </div>
+      </div>
 
-            <button
-              onClick={limpiarFormacion}
-              className="bg-red-600 text-white px-3 py-2 rounded text-sm hover:bg-red-700"
-            >
-              🗑️ Limpiar
-            </button>
-
-            <div className="ml-auto text-sm text-gray-600">Jugadores: {Object.keys(jugadoresEnCancha).length}/11</div>
-          </div>
-
-          {/* Cancha */}
-          <div className="relative w-full h-[600px] bg-gradient-to-b from-green-400 to-green-500 border-4 border-white rounded-lg overflow-hidden shadow-lg">
-            {/* Líneas de la cancha */}
-            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-white transform -translate-y-1/2" />
-            <div className="absolute top-1/2 left-1/2 w-24 h-24 border-2 border-white rounded-full transform -translate-x-1/2 -translate-y-1/2" />
-            <div className="absolute top-0 left-[30%] right-[30%] h-16 border-2 border-white border-t-0" />
-            <div className="absolute bottom-0 left-[30%] right-[30%] h-16 border-2 border-white border-b-0" />
-
-            {/* Posiciones del esquema */}
-            {esquemaActual.posiciones.map((posicion) => {
-              const jugadorAsignado = jugadoresEnCancha[posicion.id]
-
-              return (
-                <div
-                  key={posicion.id}
-                  className="absolute w-14 h-14 rounded-full border-2 border-white flex flex-col items-center justify-center cursor-pointer text-xs font-bold shadow-md transition-all duration-200 hover:scale-110"
-                  style={{
-                    left: `${posicion.x}%`,
-                    top: `${posicion.y}%`,
-                    transform: "translate(-50%, -50%)",
-                    backgroundColor: jugadorAsignado
-                      ? getPosicionColor(jugadorAsignado.posicion)
-                      : "rgba(255,255,255,0.3)",
-                    color: jugadorAsignado ? "white" : "#666",
-                  }}
-                  onClick={() => {
-                    if (jugadorAsignado) {
-                      removerJugador(posicion.id)
-                    }
-                  }}
-                  title={
-                    jugadorAsignado ? `${jugadorAsignado.nombre} - Click para remover` : `${posicion.label} - Vacío`
-                  }
-                >
-                  {jugadorAsignado ? (
-                    <>
-                      <div>{jugadorAsignado.numero}</div>
-                      <div className="text-[8px] text-center leading-none">{jugadorAsignado.nombre.split(" ")[0]}</div>
-                    </>
-                  ) : (
-                    <div>{posicion.label}</div>
-                  )}
+      {/* Rankings */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Goleadores */}
+        <div className="bg-white p-6 rounded-lg shadow border">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">⚽ Top Goleadores</h2>
+          {goleadores.length > 0 ? (
+            <div className="space-y-3">
+              {goleadores.map((jugador, index) => (
+                <div key={jugador.id} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="text-lg font-bold text-gray-500">#{index + 1}</div>
+                    <div>
+                      <div className="font-medium">{jugador.nombre}</div>
+                      <span className={`px-2 py-1 rounded text-xs ${getPosicionColor(jugador.posicion)}`}>
+                        {jugador.posicion}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-xl font-bold text-green-600">{jugador.goles}</div>
                 </div>
-              )
-            })}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 text-center">No hay goles registrados</p>
+          )}
         </div>
 
-        {/* Panel Lateral */}
-        <div className="space-y-6">
-          {/* Jugadores Disponibles */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">
-              👥 Jugadores Disponibles ({jugadoresLibres.length})
-            </h3>
-            <div className="max-h-80 overflow-y-auto border border-gray-200 rounded-lg bg-white">
-              {jugadoresLibres.map((jugador) => (
-                <div
-                  key={jugador.id}
-                  className="p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 flex items-center gap-3 transition-colors"
-                  onClick={() => {
-                    // Buscar posición vacía compatible
-                    const posicionesVacias = esquemaActual.posiciones.filter((p) => !jugadoresEnCancha[p.id])
-                    if (posicionesVacias.length > 0) {
-                      asignarJugador(posicionesVacias[0].id, jugador)
-                    }
-                  }}
-                >
-                  <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                    style={{ backgroundColor: getPosicionColor(jugador.posicion) }}
-                  >
-                    {jugador.numero}
+        {/* Más Partidos */}
+        <div className="bg-white p-6 rounded-lg shadow border">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">🏃 Más Partidos</h2>
+          {masPartidos.length > 0 ? (
+            <div className="space-y-3">
+              {masPartidos.map((jugador, index) => (
+                <div key={jugador.id} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="text-lg font-bold text-gray-500">#{index + 1}</div>
+                    <div>
+                      <div className="font-medium">{jugador.nombre}</div>
+                      <span className={`px-2 py-1 rounded text-xs ${getPosicionColor(jugador.posicion)}`}>
+                        {jugador.posicion}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <div className="font-medium text-sm">{jugador.nombre}</div>
-                    <div className="text-xs text-gray-500">{jugador.posicion}</div>
+                  <div className="text-xl font-bold text-blue-600">{jugador.partidos}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 text-center">No hay partidos registrados</p>
+          )}
+        </div>
+
+        {/* Tarjetas */}
+        <div className="bg-white p-6 rounded-lg shadow border">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">🟨 Tarjetas</h2>
+          {tarjeteros.length > 0 ? (
+            <div className="space-y-3">
+              {tarjeteros.map((jugador, index) => (
+                <div key={jugador.id} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="text-lg font-bold text-gray-500">#{index + 1}</div>
+                    <div>
+                      <div className="font-medium">{jugador.nombre}</div>
+                      <span className={`px-2 py-1 rounded text-xs ${getPosicionColor(jugador.posicion)}`}>
+                        {jugador.posicion}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {jugador.amarillas > 0 && (
+                      <span className="bg-yellow-500 text-white px-2 py-1 rounded text-xs">🟨 {jugador.amarillas}</span>
+                    )}
+                    {jugador.rojas > 0 && (
+                      <span className="bg-red-500 text-white px-2 py-1 rounded text-xs">🟥 {jugador.rojas}</span>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
-            <p className="text-xs text-gray-500 mt-2">
-              💡 Click en un jugador para agregarlo a la primera posición disponible
-            </p>
-          </div>
+          ) : (
+            <p className="text-gray-500 text-center">No hay tarjetas registradas</p>
+          )}
+        </div>
+      </div>
 
-          {/* Guardar Formación */}
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">💾 Guardar Formación</h3>
-            <input
-              type="text"
-              placeholder="Nombre de la formación..."
-              value={nombreFormacion}
-              onChange={(e) => setNombreFormacion(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm mb-3"
-            />
-            <button
-              onClick={guardarFormacion}
-              disabled={Object.keys(jugadoresEnCancha).length < 11}
-              className={`w-full py-2 px-4 rounded ${
-                Object.keys(jugadoresEnCancha).length < 11
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
-              } text-white`}
-            >
-              {Object.keys(jugadoresEnCancha).length < 11
-                ? `Faltan ${11 - Object.keys(jugadoresEnCancha).length} jugadores`
-                : "💾 Guardar Formación"}
-            </button>
+      {/* Tabla Completa de Jugadores */}
+      <div className="bg-white rounded-lg shadow border">
+        <div className="p-6 border-b">
+          <h2 className="text-xl font-bold">📋 Estadísticas Completas</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Jugador
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Posición
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Partidos
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Goles
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">🟨</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">🟥</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {jugadores.map((jugador) => (
+                <tr key={jugador.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="font-medium text-gray-900">{jugador.nombre}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 py-1 rounded text-xs ${getPosicionColor(jugador.posicion)}`}>
+                      {jugador.posicion}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">{jugador.partidos}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-green-600">
+                    {jugador.goles}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-yellow-600">
+                    {jugador.amarillas}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-red-600">{jugador.rojas}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-            {formacionGuardada && (
-              <div className="mt-3 p-2 bg-green-100 text-green-800 rounded text-sm text-center">
-                ✅ ¡Formación guardada exitosamente!
-              </div>
-            )}
-          </div>
-
-          {/* Estadísticas */}
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <h4 className="font-semibold text-gray-900 mb-2">📊 Resumen</h4>
-            <div className="text-sm text-gray-600 space-y-1">
-              <div>• Esquema: {esquemaActual.nombre}</div>
-              <div>• Jugadores en cancha: {Object.keys(jugadoresEnCancha).length}/11</div>
-              <div>• Jugadores disponibles: {jugadoresLibres.length}</div>
-            </div>
-          </div>
+      {/* Información del Sistema */}
+      <div className="bg-gray-50 p-6 rounded-lg border text-center">
+        <h3 className="font-medium text-gray-900 mb-2">📊 Estadísticas Categoría 2014</h3>
+        <p className="text-sm text-gray-600 mb-3">
+          Datos actualizados en tiempo real desde la base de datos. Incluye todas las estadísticas del torneo.
+        </p>
+        <div className="flex justify-center gap-4 text-xs text-gray-500">
+          <span className="flex items-center gap-1">
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            {jugadores.length} jugadores
+          </span>
+          <span className="flex items-center gap-1">
+            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+            {estadisticasEquipo.totalPartidos} partidos
+          </span>
+          <span className="flex items-center gap-1">
+            <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+            Datos sincronizados
+          </span>
         </div>
       </div>
     </div>
