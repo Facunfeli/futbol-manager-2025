@@ -2,9 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 
 // Datos de jugadores
 const jugadores = [
@@ -97,18 +94,21 @@ ${jugadoresCitados.map((j, i) => `${i + 1}. ${j.nombre} (${j.posicion})`).join("
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">📋 Citaciones 2014</h1>
           <p className="text-gray-600 mt-1">Crear y enviar citaciones por WhatsApp</p>
         </div>
-        <Button variant="outline" onClick={() => router.push("/citaciones")} className="flex items-center gap-2">
+        <button
+          onClick={() => router.push("/citaciones")}
+          className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+        >
           ← Volver a Citaciones
-        </Button>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Selección de Partido */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">📅 Seleccionar Partido</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+          <div className="p-6 border-b border-gray-200">
+            <h3 className="text-lg font-semibold flex items-center gap-2">📅 Seleccionar Partido</h3>
+          </div>
+          <div className="p-6 space-y-3">
             {proximosPartidos.map((partido) => (
               <div
                 key={partido.id}
@@ -123,29 +123,44 @@ ${jugadoresCitados.map((j, i) => `${i + 1}. ${j.nombre} (${j.posicion})`).join("
                 <div className="text-sm text-gray-600">
                   {new Date(partido.fecha).toLocaleDateString("es-AR")} - {partido.hora}
                 </div>
-                <Badge variant={partido.local ? "default" : "secondary"}>{partido.local ? "LOCAL" : "VISITANTE"}</Badge>
+                <span
+                  className={`inline-block px-2 py-1 text-xs rounded-full ${
+                    partido.local ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-800"
+                  }`}
+                >
+                  {partido.local ? "LOCAL" : "VISITANTE"}
+                </span>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Selección de Jugadores */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">👥 Seleccionar Jugadores</CardTitle>
-            <div className="flex gap-2">
-              <Button size="sm" variant="outline" onClick={seleccionarTodos}>
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+          <div className="p-6 border-b border-gray-200">
+            <h3 className="text-lg font-semibold flex items-center gap-2">👥 Seleccionar Jugadores</h3>
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={seleccionarTodos}
+                className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50"
+              >
                 Todos
-              </Button>
-              <Button size="sm" variant="outline" onClick={seleccionarNinguno}>
+              </button>
+              <button
+                onClick={seleccionarNinguno}
+                className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50"
+              >
                 Ninguno
-              </Button>
-              <Button size="sm" variant="outline" onClick={seleccionarTipica}>
+              </button>
+              <button
+                onClick={seleccionarTipica}
+                className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50"
+              >
                 Típica
-              </Button>
+              </button>
             </div>
-          </CardHeader>
-          <CardContent className="max-h-96 overflow-y-auto">
+          </div>
+          <div className="p-6 max-h-96 overflow-y-auto">
             <div className="space-y-2">
               {jugadores.map((jugador) => (
                 <div key={jugador.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded">
@@ -162,32 +177,31 @@ ${jugadoresCitados.map((j, i) => `${i + 1}. ${j.nombre} (${j.posicion})`).join("
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Vista Previa y Envío */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">📱 Vista Previa</CardTitle>
-            <CardDescription>{jugadoresSeleccionados.length} jugadores seleccionados</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+          <div className="p-6 border-b border-gray-200">
+            <h3 className="text-lg font-semibold flex items-center gap-2">📱 Vista Previa</h3>
+            <p className="text-sm text-gray-600">{jugadoresSeleccionados.length} jugadores seleccionados</p>
+          </div>
+          <div className="p-6 space-y-4">
             <div className="bg-green-50 p-4 rounded-lg border border-green-200">
               <pre className="text-sm whitespace-pre-wrap font-mono">{generarMensaje()}</pre>
             </div>
 
             <div className="space-y-2">
-              <Button
-                className="w-full bg-green-600 hover:bg-green-700"
+              <button
+                className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
                 onClick={enviarWhatsApp}
                 disabled={jugadoresSeleccionados.length === 0}
               >
                 📱 Enviar por WhatsApp
-              </Button>
+              </button>
 
-              <Button
-                variant="outline"
-                className="w-full bg-transparent"
+              <button
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
                 onClick={() => {
                   navigator.clipboard.writeText(generarMensaje())
                   alert("Mensaje copiado al portapapeles")
@@ -195,38 +209,38 @@ ${jugadoresCitados.map((j, i) => `${i + 1}. ${j.nombre} (${j.posicion})`).join("
                 disabled={jugadoresSeleccionados.length === 0}
               >
                 📋 Copiar Mensaje
-              </Button>
+              </button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+          <div className="p-4 text-center">
             <div className="text-2xl font-bold text-blue-600">{jugadores.length}</div>
             <div className="text-sm text-gray-600">Total Jugadores</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
+          </div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+          <div className="p-4 text-center">
             <div className="text-2xl font-bold text-green-600">{jugadoresSeleccionados.length}</div>
             <div className="text-sm text-gray-600">Seleccionados</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
+          </div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+          <div className="p-4 text-center">
             <div className="text-2xl font-bold text-purple-600">{proximosPartidos.length}</div>
             <div className="text-sm text-gray-600">Próximos Partidos</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
+          </div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+          <div className="p-4 text-center">
             <div className="text-2xl font-bold text-orange-600">100%</div>
             <div className="text-sm text-gray-600">Sistema Activo</div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   )
