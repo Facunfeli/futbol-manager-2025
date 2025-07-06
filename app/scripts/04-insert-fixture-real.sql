@@ -1,58 +1,45 @@
--- Limpiar partidos existentes
-DELETE FROM partidos;
+-- Insertar fixture de partidos
+INSERT INTO partidos (fecha, rival, local, resultado_local, resultado_visitante, estado) VALUES
+-- Partidos jugados (con resultados)
+('2024-03-10', 'Deportivo Morón', true, 4, 1, 'Finalizado'),
+('2024-03-17', 'San Telmo', false, 1, 3, 'Finalizado'),
+('2024-03-24', 'Estudiantes (BA)', true, 4, 0, 'Finalizado'),
+('2024-03-31', 'Almirante Brown', false, 2, 1, 'Finalizado'),
+('2024-04-07', 'Fénix', true, 4, 2, 'Finalizado'),
 
--- Insertar el fixture real basado en la imagen
-INSERT INTO partidos (id, fecha, rival, local, resultado_local, resultado_visitante, estado, observaciones) VALUES
--- FECHA 1 - VELEZ (V) - Resultado: 1-1 (Empate)
-(1, '2024-03-02', 'VELEZ', 0, 1, 1, 'Jugado', 'Visitante - Empate'),
+-- Partidos programados (sin resultados)
+('2024-04-14', 'Defensores de Belgrano', false, NULL, NULL, 'Programado'),
+('2024-04-21', 'Comunicaciones', true, NULL, NULL, 'Programado'),
+('2024-04-28', 'Deportivo Riestra', false, NULL, NULL, 'Programado'),
+('2024-05-05', 'Sacachispas', true, NULL, NULL, 'Programado'),
+('2024-05-12', 'Colegiales', false, NULL, NULL, 'Programado'),
+('2024-05-19', 'Deportivo Armenio', true, NULL, NULL, 'Programado'),
+('2024-05-26', 'Villa San Carlos', false, NULL, NULL, 'Programado'),
+('2024-06-02', 'Talleres (RE)', true, NULL, NULL, 'Programado'),
+('2024-06-09', 'UAI Urquiza', false, NULL, NULL, 'Programado'),
+('2024-06-16', 'Deportivo Merlo', true, NULL, NULL, 'Programado'),
+('2024-06-23', 'Dock Sud', false, NULL, NULL, 'Programado'),
+('2024-06-30', 'Sportivo Italiano', true, NULL, NULL, 'Programado'),
+('2024-07-07', 'Cañuelas', false, NULL, NULL, 'Programado'),
+('2024-07-14', 'Argentino de Quilmes', true, NULL, NULL, 'Programado'),
 
--- FECHA 2 - QUILMES (L) - Resultado: 1-0 (Derrota)
-(2, '2024-03-09', 'QUILMES', 1, 1, 0, 'Jugado', 'Local - Derrota'),
-
--- FECHA 3 - HURACAN (V) - Resultado: 2-0 (Victoria)
-(3, '2024-03-16', 'HURACAN', 0, 2, 0, 'Jugado', 'Visitante - Victoria'),
-
--- FECHA 4 - VELEZ B (L) - Resultado: 0-1 (Derrota)
-(4, '2024-03-23', 'VELEZ B', 1, 0, 1, 'Jugado', 'Local - Derrota'),
-
--- FECHA 5 - RIVER (V) - Resultado: 0-3 (Derrota)
-(5, '2024-03-30', 'RIVER', 0, 0, 3, 'Jugado', 'Visitante - Derrota'),
-
--- FECHA 6 - TIGRE (L) - Resultado: 2-0 (Victoria)
-(6, '2024-04-06', 'TIGRE', 1, 2, 0, 'Jugado', 'Local - Victoria'),
-
--- FECHA 7 - TEMPERLEY (V) - Programado
-(7, '2024-04-13', 'TEMPERLEY', 0, NULL, NULL, 'Programado', 'Visitante'),
-
--- FECHA 8 - PLATENSE (V) - Programado
-(8, '2024-04-20', 'PLATENSE', 0, NULL, NULL, 'Programado', 'Visitante'),
-
--- FECHA 9 - BOCA (L) - Programado
-(9, '2024-04-27', 'BOCA', 1, NULL, NULL, 'Programado', 'Local'),
-
--- FECHA 10 - BANFIELD (V) - Programado
-(10, '2024-05-04', 'BANFIELD', 0, NULL, NULL, 'Programado', 'Visitante'),
-
--- FECHA 11 - RACING (L) - Programado
-(11, '2024-05-11', 'RACING', 1, NULL, NULL, 'Programado', 'Local'),
-
--- FECHA 12 - INDEPENDIENTE (V) - Programado
-(12, '2024-05-18', 'INDEPENDIENTE', 0, NULL, NULL, 'Programado', 'Visitante'),
-
--- FECHA 13 - SAN LORENZO (L) - Programado
-(13, '2024-05-25', 'SAN LORENZO', 1, NULL, NULL, 'Programado', 'Local'),
-
--- FECHA 14 - GIMNASIA (V) - Programado
-(14, '2024-06-01', 'GIMNASIA', 0, NULL, NULL, 'Programado', 'Visitante'),
-
--- FECHA 15 - ESTUDIANTES (L) - Programado
-(15, '2024-06-08', 'ESTUDIANTES', 1, NULL, NULL, 'Programado', 'Local'),
-
--- FECHA 16 - FERRO (V) - Programado
-(16, '2024-06-15', 'FERRO', 0, NULL, NULL, 'Programado', 'Visitante'),
-
--- FECHA 17 - ARSENAL (L) - Programado
-(17, '2024-06-22', 'ARSENAL', 1, NULL, NULL, 'Programado', 'Local'),
-
--- FECHA 18 - ARGENTINOS JRS (VELEZ B) - Programado
-(18, '2024-06-29', 'ARGENTINOS JRS', 0, NULL, NULL, 'Programado', 'Visitante');
+-- Partidos de vuelta
+('2024-07-21', 'Deportivo Morón', false, NULL, NULL, 'Programado'),
+('2024-07-28', 'San Telmo', true, NULL, NULL, 'Programado'),
+('2024-08-04', 'Estudiantes (BA)', false, NULL, NULL, 'Programado'),
+('2024-08-11', 'Almirante Brown', true, NULL, NULL, 'Programado'),
+('2024-08-18', 'Fénix', false, NULL, NULL, 'Programado'),
+('2024-08-25', 'Defensores de Belgrano', true, NULL, NULL, 'Programado'),
+('2024-09-01', 'Comunicaciones', false, NULL, NULL, 'Programado'),
+('2024-09-08', 'Deportivo Riestra', true, NULL, NULL, 'Programado'),
+('2024-09-15', 'Sacachispas', false, NULL, NULL, 'Programado'),
+('2024-09-22', 'Colegiales', true, NULL, NULL, 'Programado'),
+('2024-09-29', 'Deportivo Armenio', false, NULL, NULL, 'Programado'),
+('2024-10-06', 'Villa San Carlos', true, NULL, NULL, 'Programado'),
+('2024-10-13', 'Talleres (RE)', false, NULL, NULL, 'Programado'),
+('2024-10-20', 'UAI Urquiza', true, NULL, NULL, 'Programado'),
+('2024-10-27', 'Deportivo Merlo', false, NULL, NULL, 'Programado'),
+('2024-11-03', 'Dock Sud', true, NULL, NULL, 'Programado'),
+('2024-11-10', 'Sportivo Italiano', false, NULL, NULL, 'Programado'),
+('2024-11-17', 'Cañuelas', true, NULL, NULL, 'Programado'),
+('2024-11-24', 'Argentino de Quilmes', false, NULL, NULL, 'Programado');

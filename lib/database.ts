@@ -1,31 +1,22 @@
-import { createClient } from "@supabase/supabase-js"
+import { neon } from "@neondatabase/serverless"
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const sql = neon(process.env.DATABASE_URL!)
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
-
-// Tipos de datos
 export interface Jugador {
   id: number
-  dni: string
-  apellido_nombre: string
-  numero_socio?: string
-  fichado?: string
+  nombre: string
+  apellido: string
+  fecha_nacimiento: string
   posicion: string
-  pierna_habil: string
+  numero_camiseta?: number
   telefono?: string
   email?: string
-  fecha_nacimiento?: string
-  altura?: number
-  peso?: number
-  numero_camiseta?: number
-  fecha_incorporacion?: string
-  estado_fisico: string
-  observaciones?: string
+  direccion?: string
+  categoria: string
   activo: boolean
-  created_at?: string
-  anio_nacimiento?: number
+  observaciones?: string
+  created_at: string
+  updated_at: string
 }
 
 export interface Partido {
@@ -35,24 +26,24 @@ export interface Partido {
   local: boolean
   resultado_local?: number
   resultado_visitante?: number
-  observaciones?: string
   estado: string
-  created_at?: string
+  observaciones?: string
+  categoria: string
+  created_at: string
+  updated_at: string
 }
 
-export interface EstadisticaPartido {
+export interface Estadistica {
   id: number
   jugador_id: number
   partido_id: number
-  titular: boolean
-  minutos_jugados: number
   goles: number
   asistencias: number
   tarjetas_amarillas: number
   tarjetas_rojas: number
-  autogoles: number
-  penales_convertidos: number
-  penales_errados: number
+  minutos_jugados: number
+  created_at: string
+  updated_at: string
 }
 
 export interface Citacion {
@@ -61,241 +52,285 @@ export interface Citacion {
   jugador_id: number
   citado: boolean
   confirmado: boolean
-  motivo_ausencia?: string
-  fecha_citacion: string
+  observaciones?: string
+  created_at: string
+  updated_at: string
 }
 
 // Funciones para Jugadores
-export async function obtenerJugadores(anio?: number): Promise<Jugador[]> {
-  let query = supabase.from("jugadores").select("*").eq("activo", true).order("apellido_nombre")
+export async function obtenerJugadores(categoria?: string): Promise<Jugador[]> {
+  try {
+    let query = "SELECT * FROM jugadores WHERE activo = true"
+    const params: any[] = []
 
-  if (anio) {
-    query = query.eq("anio_nacimiento", anio)
-  }
+    if (categoria) {
+      query += " AND categoria = $1"
+      params.push(categoria)
+    }
 
-  const { data, error } = await query
+    query += " ORDER BY apellido, nombre"
 
-  if (error) {
+    const result = await sql(query, params)
+    return result as Jugador[]
+  } catch (error) {
     console.error("Error obteniendo jugadores:", error)
-    throw error
+    throw new Error("Error obteniendo jugadores")
   }
-
-  return data || []
 }
 
 export async function obtenerJugadorPorId(id: number): Promise<Jugador | null> {
-  const { data, error } = await supabase.from("jugadores").select("*").eq("id", id).single()
-
-  if (error) {
+  try {
+    const result = await sql("SELECT * FROM jugadores WHERE id = $1", [id])
+    return result.length > 0 ? (result[0] as Jugador) : null
+  } catch (error) {
     console.error("Error obteniendo jugador:", error)
-    return null
+    throw new Error("Error obteniendo jugador")
   }
-
-  return data
 }
 
-export async function crearJugador(jugador: Omit<Jugador, "id" | "created_at">): Promise<Jugador> {
-  const { data, error } = await supabase.from("jugadores").insert([jugador]).select().single()
-
-  if (error) {
+export async function crearJugador(jugador: Omit<Jugador, "id" | "created_at" | "updated_at">): Promise<Jugador> {
+  try {
+    const result = await sql(
+      `INSERT INTO jugadores (nombre, apellido, fecha_nacimiento, posicion, numero_camiseta, telefono, email, direccion, categoria, activo, observaciones)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+       RETURNING *`,
+      [
+        jugador.nombre,
+        jugador.apellido,
+        jugador.fecha_nacimiento,
+        jugador.posicion,
+        jugador.numero_camiseta,
+        jugador.telefono,
+        jugador.email,
+        jugador.direccion,
+        jugador.categoria,
+        jugador.activo,
+        jugador.observaciones,
+      ],
+    )
+    return result[0] as Jugador
+  } catch (error) {
     console.error("Error creando jugador:", error)
-    throw error
+    throw new Error("Error creando jugador")
   }
-
-  return data
 }
 
-export async function actualizarJugador(id: number, jugador: Partial<Jugador>): Promise<Jugador> {
-  const { data, error } = await supabase.from("jugadores").update(jugador).eq("id", id).select().single()
+export async function actualizarJugador(
+  id: number,
+  jugador: Partial<Omit<Jugador, "id" | "created_at" | "updated_at">>,
+): Promise<Jugador> {
+  try {
+    const fields = Object.keys(jugador)
+      .map((key, index) => `${key} = $${index + 2}`)
+      .join(", ")
 
-  if (error) {
+    const values = Object.values(jugador)
+
+    const result = await sql(
+      `UPDATE jugadores SET ${fields}, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *`,
+      [id, ...values],
+    )
+
+    return result[0] as Jugador
+  } catch (error) {
     console.error("Error actualizando jugador:", error)
-    throw error
+    throw new Error("Error actualizando jugador")
   }
-
-  return data
 }
 
 export async function eliminarJugador(id: number): Promise<void> {
-  const { error } = await supabase.from("jugadores").update({ activo: false }).eq("id", id)
-
-  if (error) {
+  try {
+    await sql("UPDATE jugadores SET activo = false WHERE id = $1", [id])
+  } catch (error) {
     console.error("Error eliminando jugador:", error)
-    throw error
+    throw new Error("Error eliminando jugador")
   }
 }
 
 // Funciones para Partidos
-export async function obtenerPartidos(): Promise<Partido[]> {
-  const { data, error } = await supabase.from("partidos").select("*").order("fecha", { ascending: true })
+export async function obtenerPartidos(categoria?: string): Promise<Partido[]> {
+  try {
+    let query = "SELECT * FROM partidos"
+    const params: any[] = []
 
-  if (error) {
+    if (categoria) {
+      query += " WHERE categoria = $1"
+      params.push(categoria)
+    }
+
+    query += " ORDER BY fecha DESC"
+
+    const result = await sql(query, params)
+    return result as Partido[]
+  } catch (error) {
     console.error("Error obteniendo partidos:", error)
-    throw error
+    throw new Error("Error obteniendo partidos")
   }
-
-  return data || []
 }
 
 export async function obtenerPartidoPorId(id: number): Promise<Partido | null> {
-  const { data, error } = await supabase.from("partidos").select("*").eq("id", id).single()
-
-  if (error) {
+  try {
+    const result = await sql("SELECT * FROM partidos WHERE id = $1", [id])
+    return result.length > 0 ? (result[0] as Partido) : null
+  } catch (error) {
     console.error("Error obteniendo partido:", error)
-    return null
+    throw new Error("Error obteniendo partido")
   }
-
-  return data
 }
 
-export async function crearPartido(partido: Omit<Partido, "id" | "created_at">): Promise<Partido> {
-  const { data, error } = await supabase.from("partidos").insert([partido]).select().single()
-
-  if (error) {
+export async function crearPartido(partido: Omit<Partido, "id" | "created_at" | "updated_at">): Promise<Partido> {
+  try {
+    const result = await sql(
+      `INSERT INTO partidos (fecha, rival, local, resultado_local, resultado_visitante, estado, observaciones, categoria)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING *`,
+      [
+        partido.fecha,
+        partido.rival,
+        partido.local,
+        partido.resultado_local,
+        partido.resultado_visitante,
+        partido.estado,
+        partido.observaciones,
+        partido.categoria,
+      ],
+    )
+    return result[0] as Partido
+  } catch (error) {
     console.error("Error creando partido:", error)
-    throw error
+    throw new Error("Error creando partido")
   }
-
-  return data
 }
 
-export async function actualizarPartido(id: number, partido: Partial<Partido>): Promise<Partido> {
-  const { data, error } = await supabase.from("partidos").update(partido).eq("id", id).select().single()
+export async function actualizarPartido(
+  id: number,
+  partido: Partial<Omit<Partido, "id" | "created_at" | "updated_at">>,
+): Promise<Partido> {
+  try {
+    const fields = Object.keys(partido)
+      .map((key, index) => `${key} = $${index + 2}`)
+      .join(", ")
 
-  if (error) {
+    const values = Object.values(partido)
+
+    const result = await sql(
+      `UPDATE partidos SET ${fields}, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *`,
+      [id, ...values],
+    )
+
+    return result[0] as Partido
+  } catch (error) {
     console.error("Error actualizando partido:", error)
-    throw error
+    throw new Error("Error actualizando partido")
   }
-
-  return data
 }
 
 // Funciones para Estadísticas
-export async function obtenerEstadisticasJugador(jugadorId: number): Promise<EstadisticaPartido[]> {
-  const { data, error } = await supabase
-    .from("estadisticas_partidos")
-    .select(`
-      *,
-      partidos (
-        fecha,
-        rival,
-        local,
-        resultado_local,
-        resultado_visitante
-      )
-    `)
-    .eq("jugador_id", jugadorId)
-    .order("id", { ascending: false })
+export async function obtenerEstadisticas(jugadorId?: number, partidoId?: number): Promise<Estadistica[]> {
+  try {
+    let query = "SELECT * FROM estadisticas WHERE 1=1"
+    const params: any[] = []
+    let paramIndex = 1
 
-  if (error) {
+    if (jugadorId) {
+      query += ` AND jugador_id = $${paramIndex}`
+      params.push(jugadorId)
+      paramIndex++
+    }
+
+    if (partidoId) {
+      query += ` AND partido_id = $${paramIndex}`
+      params.push(partidoId)
+      paramIndex++
+    }
+
+    query += " ORDER BY created_at DESC"
+
+    const result = await sql(query, params)
+    return result as Estadistica[]
+  } catch (error) {
     console.error("Error obteniendo estadísticas:", error)
-    throw error
+    throw new Error("Error obteniendo estadísticas")
   }
-
-  return data || []
 }
 
-export async function obtenerEstadisticasPartido(partidoId: number): Promise<EstadisticaPartido[]> {
-  const { data, error } = await supabase
-    .from("estadisticas_partidos")
-    .select(`
-      *,
-      jugadores (
-        apellido_nombre,
-        posicion,
-        numero_camiseta
-      )
-    `)
-    .eq("partido_id", partidoId)
-
-  if (error) {
-    console.error("Error obteniendo estadísticas del partido:", error)
-    throw error
+export async function crearEstadistica(
+  estadistica: Omit<Estadistica, "id" | "created_at" | "updated_at">,
+): Promise<Estadistica> {
+  try {
+    const result = await sql(
+      `INSERT INTO estadisticas (jugador_id, partido_id, goles, asistencias, tarjetas_amarillas, tarjetas_rojas, minutos_jugados)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING *`,
+      [
+        estadistica.jugador_id,
+        estadistica.partido_id,
+        estadistica.goles,
+        estadistica.asistencias,
+        estadistica.tarjetas_amarillas,
+        estadistica.tarjetas_rojas,
+        estadistica.minutos_jugados,
+      ],
+    )
+    return result[0] as Estadistica
+  } catch (error) {
+    console.error("Error creando estadística:", error)
+    throw new Error("Error creando estadística")
   }
-
-  return data || []
-}
-
-export async function guardarEstadisticaPartido(
-  estadistica: Omit<EstadisticaPartido, "id">,
-): Promise<EstadisticaPartido> {
-  const { data, error } = await supabase.from("estadisticas_partidos").upsert([estadistica]).select().single()
-
-  if (error) {
-    console.error("Error guardando estadística:", error)
-    throw error
-  }
-
-  return data
 }
 
 // Funciones para Citaciones
-export async function obtenerCitacionesPartido(partidoId: number): Promise<Citacion[]> {
-  const { data, error } = await supabase
-    .from("citaciones")
-    .select(`
-      *,
-      jugadores (
-        apellido_nombre,
-        posicion,
-        telefono
-      )
-    `)
-    .eq("partido_id", partidoId)
+export async function obtenerCitaciones(partidoId?: number): Promise<Citacion[]> {
+  try {
+    let query = "SELECT * FROM citaciones"
+    const params: any[] = []
 
-  if (error) {
+    if (partidoId) {
+      query += " WHERE partido_id = $1"
+      params.push(partidoId)
+    }
+
+    query += " ORDER BY created_at DESC"
+
+    const result = await sql(query, params)
+    return result as Citacion[]
+  } catch (error) {
     console.error("Error obteniendo citaciones:", error)
-    throw error
+    throw new Error("Error obteniendo citaciones")
   }
-
-  return data || []
 }
 
-export async function crearCitacion(citacion: Omit<Citacion, "id" | "fecha_citacion">): Promise<Citacion> {
-  const { data, error } = await supabase
-    .from("citaciones")
-    .insert([{ ...citacion, fecha_citacion: new Date().toISOString() }])
-    .select()
-    .single()
-
-  if (error) {
+export async function crearCitacion(citacion: Omit<Citacion, "id" | "created_at" | "updated_at">): Promise<Citacion> {
+  try {
+    const result = await sql(
+      `INSERT INTO citaciones (partido_id, jugador_id, citado, confirmado, observaciones)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING *`,
+      [citacion.partido_id, citacion.jugador_id, citacion.citado, citacion.confirmado, citacion.observaciones],
+    )
+    return result[0] as Citacion
+  } catch (error) {
     console.error("Error creando citación:", error)
-    throw error
+    throw new Error("Error creando citación")
   }
-
-  return data
 }
 
-export async function actualizarCitacion(id: number, citacion: Partial<Citacion>): Promise<Citacion> {
-  const { data, error } = await supabase.from("citaciones").update(citacion).eq("id", id).select().single()
-
-  if (error) {
-    console.error("Error actualizando citación:", error)
-    throw error
-  }
-
-  return data
-}
-
-// Funciones de estadísticas agregadas
+// Función para obtener estadísticas generales
 export async function obtenerEstadisticasGenerales() {
-  const { data: jugadores, error: errorJugadores } = await supabase
-    .from("jugadores")
-    .select("id, apellido_nombre, posicion")
-    .eq("activo", true)
+  try {
+    const [jugadores, partidos, estadisticas] = await Promise.all([
+      obtenerJugadores(),
+      obtenerPartidos(),
+      obtenerEstadisticas(),
+    ])
 
-  const { data: partidos, error: errorPartidos } = await supabase.from("partidos").select("*")
-
-  const { data: estadisticas, error: errorEstadisticas } = await supabase.from("estadisticas_partidos").select("*")
-
-  if (errorJugadores || errorPartidos || errorEstadisticas) {
-    console.error("Error obteniendo estadísticas generales")
+    return {
+      jugadores,
+      partidos,
+      estadisticas,
+    }
+  } catch (error) {
+    console.error("Error obteniendo estadísticas generales:", error)
     throw new Error("Error obteniendo estadísticas generales")
-  }
-
-  return {
-    jugadores: jugadores || [],
-    partidos: partidos || [],
-    estadisticas: estadisticas || [],
   }
 }

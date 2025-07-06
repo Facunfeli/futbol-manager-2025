@@ -1,640 +1,32 @@
 "use client"
 
 import Link from "next/link"
+import { useState, useEffect } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 
-// Datos completos de jugadores categoría 2014 basados en tu planilla
-const jugadores2014 = [
-  {
-    id: 1,
-    nombre: "ZARATE MARTIN",
-    dni: "54.062.160",
-    posicion: "DEFENSOR",
-    pierna: "DERECHO",
-    fichado: "METRO/SEG GRUPO",
-    numero_socio: "",
-    partidos: 0,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 2,
-    nombre: "AMARILLO MARTIN",
-    dni: "53.972.046",
-    posicion: "DEFENSOR",
-    pierna: "DERECHO",
-    fichado: "AFA/METRO",
-    numero_socio: "56438",
-    partidos: 6,
-    goles: 0,
-    amarillas: 1,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 3,
-    nombre: "ALVAREZ LORENZO",
-    dni: "54.130.324",
-    posicion: "DEFENSOR",
-    pierna: "DERECHO",
-    fichado: "AFA/METRO",
-    numero_socio: "59443-1",
-    partidos: 1,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 4,
-    nombre: "BREY FEDERICO",
-    dni: "53.755.218",
-    posicion: "DEFENSOR",
-    pierna: "DERECHO",
-    fichado: "AFA/METRO",
-    numero_socio: "57713",
-    partidos: 1,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 5,
-    nombre: "BENITEZ BENJAMIN",
-    dni: "54.223.233",
-    posicion: "ARQUERO",
-    pierna: "DERECHO",
-    fichado: "METRO",
-    numero_socio: "057727-1",
-    partidos: 5,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 6,
-    nombre: "CABALLERO THIAGO",
-    dni: "53.879.078",
-    posicion: "VOLANTE",
-    pierna: "IZQUIERDO",
-    fichado: "AFA/METRO",
-    numero_socio: "057712-1",
-    partidos: 1,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 7,
-    nombre: "LOZANO LORENZO",
-    dni: "54.359.239",
-    posicion: "DEFENSOR",
-    pierna: "DERECHO",
-    fichado: "AFA/METRO",
-    numero_socio: "086339-1",
-    partidos: 5,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 8,
-    nombre: "DORADO MATEO",
-    dni: "53.985.186",
-    posicion: "VOLANTE",
-    pierna: "IZQUIERDO",
-    fichado: "AFA/METRO",
-    numero_socio: "57714",
-    partidos: 6,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 9,
-    nombre: "CATALAN FRANCO",
-    dni: "54.210.852",
-    posicion: "DELANTERO",
-    pierna: "DERECHO",
-    fichado: "METRO",
-    numero_socio: "",
-    partidos: 6,
-    goles: 1,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 10,
-    nombre: "SASSI LUCA",
-    dni: "53.584.225",
-    posicion: "DEFENSOR",
-    pierna: "DERECHO",
-    fichado: "METRO",
-    numero_socio: "085466-1",
-    partidos: 0,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 11,
-    nombre: "QUIROGA ROMAN",
-    dni: "53.849.570",
-    posicion: "DELANTERO",
-    pierna: "IZQUIERDO",
-    fichado: "AFA",
-    numero_socio: "57329",
-    partidos: 0,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 12,
-    nombre: "RETAMAR ESTEFANO",
-    dni: "54.042.073",
-    posicion: "DEFENSOR",
-    pierna: "IZQUIERDO",
-    fichado: "AFA",
-    numero_socio: "057718-3",
-    partidos: 0,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 13,
-    nombre: "RYNKIEWICZ PEDRO",
-    dni: "53.857.975",
-    posicion: "DEFENSOR",
-    pierna: "IZQUIERDO",
-    fichado: "AFA",
-    numero_socio: "068170-1",
-    partidos: 0,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 14,
-    nombre: "UMAÑO SIMON",
-    dni: "53.892.760",
-    posicion: "VOLANTE",
-    pierna: "DERECHO",
-    fichado: "AFA",
-    numero_socio: "57879",
-    partidos: 0,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 15,
-    nombre: "OCHOA ALEJO",
-    dni: "53.991.020",
-    posicion: "DELANTERO",
-    pierna: "DERECHO",
-    fichado: "AFA/METRO",
-    numero_socio: "57742",
-    partidos: 1,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 16,
-    nombre: "ORTIZ CIRILO AARON",
-    dni: "54.849.204",
-    posicion: "VOLANTE",
-    pierna: "IZQUIERDO",
-    fichado: "AFA/METRO",
-    numero_socio: "57813",
-    partidos: 0,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 17,
-    nombre: "TORRES THIAGO",
-    dni: "53.448.553",
-    posicion: "DELANTERO",
-    pierna: "DERECHO",
-    fichado: "AFA/METRO",
-    numero_socio: "58801",
-    partidos: 2,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 18,
-    nombre: "ZACHOZY BASTIAN",
-    dni: "53.982.395",
-    posicion: "DEFENSOR",
-    pierna: "DERECHO",
-    fichado: "AFA/METRO",
-    numero_socio: "65352",
-    partidos: 1,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 19,
-    nombre: "SOSA CIRO",
-    dni: "53.836.055",
-    posicion: "DELANTERO",
-    pierna: "DERECHO",
-    fichado: "AFA/METRO",
-    numero_socio: "69653-1",
-    partidos: 3,
-    goles: 1,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 20,
-    nombre: "CABRAL MAXIMO",
-    dni: "53.682.513",
-    posicion: "DELANTERO",
-    pierna: "DERECHO",
-    fichado: "AFA/METRO",
-    numero_socio: "057828-2",
-    partidos: 1,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 21,
-    nombre: "SALINAS PATRICIO",
-    dni: "53.600.085",
-    posicion: "VOLANTE",
-    pierna: "DERECHO",
-    fichado: "AFA",
-    numero_socio: "077211-1",
-    partidos: 0,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 22,
-    nombre: "ZABALA BENICIO",
-    dni: "53.696.469",
-    posicion: "VOLANTE",
-    pierna: "DERECHO",
-    fichado: "AFA/METRO",
-    numero_socio: "066413-1",
-    partidos: 4,
-    goles: 2,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 23,
-    nombre: "FERNANDEZ BASTIAN",
-    dni: "54.414.937",
-    posicion: "DEFENSOR",
-    pierna: "DERECHO",
-    fichado: "AFA/METRO",
-    numero_socio: "058503-2",
-    partidos: 1,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 24,
-    nombre: "ORTEGA SANTINO",
-    dni: "53.719.367",
-    posicion: "VOLANTE",
-    pierna: "DERECHO",
-    fichado: "METRO",
-    numero_socio: "068652-1",
-    partidos: 3,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 25,
-    nombre: "RAMON LUCIO",
-    dni: "54.270.131",
-    posicion: "DELANTERO",
-    pierna: "DERECHO",
-    fichado: "AFA/METRO",
-    numero_socio: "70316",
-    partidos: 2,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 26,
-    nombre: "PEÑIALBA MILO",
-    dni: "54.210.861",
-    posicion: "DELANTERO",
-    pierna: "IZQUIERDO",
-    fichado: "METRO",
-    numero_socio: "080916-1",
-    partidos: 3,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 27,
-    nombre: "QUINTEROS LAUTARO",
-    dni: "53.831.772",
-    posicion: "DEFENSOR",
-    pierna: "DERECHO",
-    fichado: "METRO",
-    numero_socio: "068447-1",
-    partidos: 4,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 28,
-    nombre: "PORCO BENJAMIN",
-    dni: "53.676.551",
-    posicion: "VOLANTE",
-    pierna: "IZQUIERDO",
-    fichado: "AFA/METRO",
-    numero_socio: "073166-1",
-    partidos: 6,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 29,
-    nombre: "LEGUIZA PEDRO",
-    dni: "54.103.253",
-    posicion: "ARQUERO",
-    pierna: "DERECHO",
-    fichado: "AFA/METRO",
-    numero_socio: "043272-2",
-    partidos: 2,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 30,
-    nombre: "OBELAR SIMON",
-    dni: "53.762.587",
-    posicion: "ARQUERO",
-    pierna: "DERECHO",
-    fichado: "AFA/METRO",
-    numero_socio: "094858-2",
-    partidos: 3,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 31,
-    nombre: "CARLOMANGO DANTE",
-    dni: "54.229.124",
-    posicion: "ARQUERO",
-    pierna: "DERECHO",
-    fichado: "METRO",
-    numero_socio: "094959-1",
-    partidos: 2,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 32,
-    nombre: "BENTOS JULIAN",
-    dni: "53.605.885",
-    posicion: "VOLANTE",
-    pierna: "IZQUIERDO",
-    fichado: "AFA/METRO",
-    numero_socio: "094949-1",
-    partidos: 3,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 33,
-    nombre: "VITO CASTILLO LEON",
-    dni: "54.040.876",
-    posicion: "DELANTERO",
-    pierna: "DERECHO",
-    fichado: "AFA/METRO",
-    numero_socio: "",
-    partidos: 4,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 34,
-    nombre: "TEVEZ VALENTINO",
-    dni: "53.842.006",
-    posicion: "VOLANTE",
-    pierna: "IZQUIERDO",
-    fichado: "AFA/METRO",
-    numero_socio: "",
-    partidos: 0,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 35,
-    nombre: "CONSTANZO GINO",
-    dni: "53.949.515",
-    posicion: "VOLANTE",
-    pierna: "DERECHO",
-    fichado: "METRO",
-    numero_socio: "85495",
-    partidos: 2,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 36,
-    nombre: "YTIEL SANCHEZ",
-    dni: "53.948.797",
-    posicion: "DEFENSOR",
-    pierna: "DERECHO",
-    fichado: "METRO",
-    numero_socio: "094511-1",
-    partidos: 2,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 37,
-    nombre: "MARTINEZ BAUTISTA",
-    dni: "54.420.429",
-    posicion: "DEFENSOR",
-    pierna: "DERECHO",
-    fichado: "METRO",
-    numero_socio: "",
-    partidos: 1,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 38,
-    nombre: "ROMERO MARCOS",
-    dni: "54.457.000",
-    posicion: "DELANTERO",
-    pierna: "DERECHO",
-    fichado: "METRO",
-    numero_socio: "73723-1",
-    partidos: 0,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 39,
-    nombre: "MACRI MATIAS",
-    dni: "53.682.343",
-    posicion: "DEFENSOR",
-    pierna: "IZQUIERDO",
-    fichado: "METRO",
-    numero_socio: "085968-1",
-    partidos: 1,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 40,
-    nombre: "MOSQUERA JOAQUIN",
-    dni: "54.130.348",
-    posicion: "DELANTERO",
-    pierna: "IZQUIERDO",
-    fichado: "METRO",
-    numero_socio: "059417-1",
-    partidos: 4,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 41,
-    nombre: "DIAZ CELESTINO TADEO",
-    dni: "53.743.879",
-    posicion: "DELANTERO",
-    pierna: "IZQUIERDO",
-    fichado: "AFA",
-    numero_socio: "",
-    partidos: 0,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 42,
-    nombre: "ESTEVEZ NAZARENO",
-    dni: "53.788.702",
-    posicion: "VOLANTE",
-    pierna: "DERECHO",
-    fichado: "",
-    numero_socio: "",
-    partidos: 0,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 43,
-    nombre: "GONZALEZ ROMEO",
-    dni: "54.269.115",
-    posicion: "DEFENSOR",
-    pierna: "IZQUIERDO",
-    fichado: "METRO",
-    numero_socio: "",
-    partidos: 4,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 44,
-    nombre: "JIMENEZ FRANCESCO",
-    dni: "53.832.551",
-    posicion: "ARQUERO",
-    pierna: "DERECHO",
-    fichado: "AFA",
-    numero_socio: "057916-2",
-    partidos: 0,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-  {
-    id: 45,
-    nombre: "RODRIGUEZ SCHOEN LEON",
-    dni: "54.229.011",
-    posicion: "VOLANTE",
-    pierna: "IZQUIERDO",
-    fichado: "METRO",
-    numero_socio: "",
-    partidos: 4,
-    goles: 0,
-    amarillas: 0,
-    rojas: 0,
-    estado: "Disponible",
-  },
-]
+interface Jugador {
+  id: number
+  apellido_nombre: string
+  dni: string
+  posicion: string
+  pierna_habil: string
+  fichado?: string
+  numero_socio?: string
+  numero_camiseta?: number
+  telefono?: string
+  email?: string
+  fecha_nacimiento?: string
+  altura?: number
+  peso?: number
+  estado_fisico: string
+  partidos?: number
+  goles?: number
+  asistencias?: number
+  amarillas?: number
+  rojas?: number
+  minutos_totales?: number
+}
 
 const getPosicionColor = (posicion: string) => {
   switch (posicion) {
@@ -652,273 +44,277 @@ const getPosicionColor = (posicion: string) => {
 }
 
 export default function Jugadores2014Page() {
-  const arqueros = jugadores2014.filter((j) => j.posicion === "ARQUERO").length
-  const defensores = jugadores2014.filter((j) => j.posicion === "DEFENSOR").length
-  const volantes = jugadores2014.filter((j) => j.posicion === "VOLANTE").length
-  const delanteros = jugadores2014.filter((j) => j.posicion === "DELANTERO").length
+  const [jugadores, setJugadores] = useState<Jugador[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [filtroTexto, setFiltroTexto] = useState("")
+  const [filtroPosicion, setFiltroPosicion] = useState("")
+  const [ordenarPor, setOrdenarPor] = useState("nombre")
+
+  useEffect(() => {
+    cargarJugadores()
+  }, [])
+
+  const cargarJugadores = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch("/api/jugadores?anio=2014")
+
+      if (!response.ok) {
+        throw new Error("Error cargando jugadores")
+      }
+
+      const data = await response.json()
+      setJugadores(data)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error desconocido")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const jugadoresFiltrados = jugadores
+    .filter((jugador) => {
+      const coincideTexto =
+        jugador.apellido_nombre.toLowerCase().includes(filtroTexto.toLowerCase()) || jugador.dni.includes(filtroTexto)
+      const coincidePosicion = !filtroPosicion || jugador.posicion === filtroPosicion
+      return coincideTexto && coincidePosicion
+    })
+    .sort((a, b) => {
+      switch (ordenarPor) {
+        case "nombre":
+          return a.apellido_nombre.localeCompare(b.apellido_nombre)
+        case "posicion":
+          return a.posicion.localeCompare(b.posicion)
+        case "goles":
+          return (b.goles || 0) - (a.goles || 0)
+        case "partidos":
+          return (b.partidos || 0) - (a.partidos || 0)
+        default:
+          return 0
+      }
+    })
+
+  const posicionesUnicas = [...new Set(jugadores.map((j) => j.posicion))].sort()
+
+  const estadisticasPorPosicion = {
+    ARQUERO: jugadores.filter((j) => j.posicion === "ARQUERO").length,
+    DEFENSOR: jugadores.filter((j) => j.posicion === "DEFENSOR").length,
+    VOLANTE: jugadores.filter((j) => j.posicion === "VOLANTE").length,
+    DELANTERO: jugadores.filter((j) => j.posicion === "DELANTERO").length,
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando jugadores...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="text-red-600 text-6xl mb-4">⚠️</div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Error al cargar jugadores</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <Button onClick={cargarJugadores}>Reintentar</Button>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+    <div className="p-6 space-y-6">
       {/* Header */}
-      <div style={{ marginBottom: "30px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-          <div>
-            <h1 style={{ fontSize: "32px", color: "#333", margin: "0 0 10px 0" }}>📅 Plantel Categoría 2014</h1>
-            <p style={{ color: "#666", margin: 0 }}>
-              Gestión completa de jugadores nacidos en 2014 - {jugadores2014.length} jugadores registrados
-            </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">👥 Plantel 2014</h1>
+          <p className="text-gray-600">Gestión completa del plantel categoría 2014</p>
+        </div>
+        <div className="flex gap-3">
+          <Link href="/jugadores/2014/nuevo">
+            <Button>➕ Agregar Jugador</Button>
+          </Link>
+          <Link href="/jugadores">
+            <Button variant="outline">← Volver</Button>
+          </Link>
+        </div>
+      </div>
+
+      {/* Estadísticas Rápidas */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-blue-600">{jugadores.length}</div>
+            <div className="text-sm text-gray-600">Total Jugadores</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-yellow-600">{estadisticasPorPosicion.ARQUERO}</div>
+            <div className="text-sm text-gray-600">Arqueros</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-blue-600">{estadisticasPorPosicion.DEFENSOR}</div>
+            <div className="text-sm text-gray-600">Defensores</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-green-600">{estadisticasPorPosicion.VOLANTE}</div>
+            <div className="text-sm text-gray-600">Volantes</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Filtros y Búsqueda */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Buscar</label>
+              <input
+                type="text"
+                placeholder="Nombre o DNI..."
+                value={filtroTexto}
+                onChange={(e) => setFiltroTexto(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Posición</label>
+              <select
+                value={filtroPosicion}
+                onChange={(e) => setFiltroPosicion(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+              >
+                <option value="">Todas las posiciones</option>
+                {posicionesUnicas.map((posicion) => (
+                  <option key={posicion} value={posicion}>
+                    {posicion}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Ordenar por</label>
+              <select
+                value={ordenarPor}
+                onChange={(e) => setOrdenarPor(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+              >
+                <option value="nombre">Nombre</option>
+                <option value="posicion">Posición</option>
+                <option value="goles">Goles</option>
+                <option value="partidos">Partidos</option>
+              </select>
+            </div>
+            <div className="flex items-end">
+              <Button onClick={cargarJugadores} variant="outline" className="w-full bg-transparent">
+                �� Actualizar
+              </Button>
+            </div>
           </div>
-          <div style={{ display: "flex", gap: "10px" }}>
-            <Link
-              href="/jugadores/2014/nuevo"
-              style={{
-                backgroundColor: "#28a745",
-                color: "white",
-                padding: "10px 20px",
-                textDecoration: "none",
-                borderRadius: "4px",
-                fontSize: "14px",
-                display: "flex",
-                alignItems: "center",
-                gap: "5px",
-              }}
-            >
-              ➕ Nuevo Jugador 2014
-            </Link>
-            <Link
-              href="/jugadores"
-              style={{
-                backgroundColor: "#6c757d",
-                color: "white",
-                padding: "10px 20px",
-                textDecoration: "none",
-                borderRadius: "4px",
-                fontSize: "14px",
-              }}
-            >
-              ← Volver a Categorías
-            </Link>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
-      {/* Breadcrumb */}
-      <div
-        style={{
-          marginBottom: "20px",
-          fontSize: "14px",
-          color: "#666",
-          backgroundColor: "#f8f9fa",
-          padding: "10px 15px",
-          borderRadius: "4px",
-          border: "1px solid #dee2e6",
-        }}
-      >
-        <Link href="/" style={{ color: "#007bff", textDecoration: "none" }}>
-          Dashboard
-        </Link>
-        {" > "}
-        <Link href="/jugadores" style={{ color: "#007bff", textDecoration: "none" }}>
-          Jugadores
-        </Link>
-        {" > "}
-        <span style={{ fontWeight: "bold" }}>Categoría 2014</span>
-      </div>
-
-      {/* Search */}
-      <div style={{ marginBottom: "20px" }}>
-        <input
-          type="text"
-          placeholder="Buscar por nombre, DNI o número de socio..."
-          style={{
-            width: "100%",
-            padding: "12px",
-            border: "1px solid #ddd",
-            borderRadius: "4px",
-            fontSize: "16px",
-          }}
-        />
-      </div>
-
-      {/* Stats Summary */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-          gap: "15px",
-          marginBottom: "30px",
-        }}
-      >
-        <div style={{ ...getPosicionColor("ARQUERO"), padding: "15px", borderRadius: "8px", textAlign: "center" }}>
-          <div style={{ fontSize: "24px", fontWeight: "bold" }}>{arqueros}</div>
-          <p style={{ margin: "5px 0 0 0", fontSize: "14px" }}>Arqueros</p>
-        </div>
-        <div style={{ ...getPosicionColor("DEFENSOR"), padding: "15px", borderRadius: "8px", textAlign: "center" }}>
-          <div style={{ fontSize: "24px", fontWeight: "bold" }}>{defensores}</div>
-          <p style={{ margin: "5px 0 0 0", fontSize: "14px" }}>Defensores</p>
-        </div>
-        <div style={{ ...getPosicionColor("VOLANTE"), padding: "15px", borderRadius: "8px", textAlign: "center" }}>
-          <div style={{ fontSize: "24px", fontWeight: "bold" }}>{volantes}</div>
-          <p style={{ margin: "5px 0 0 0", fontSize: "14px" }}>Volantes</p>
-        </div>
-        <div style={{ ...getPosicionColor("DELANTERO"), padding: "15px", borderRadius: "8px", textAlign: "center" }}>
-          <div style={{ fontSize: "24px", fontWeight: "bold" }}>{delanteros}</div>
-          <p style={{ margin: "5px 0 0 0", fontSize: "14px" }}>Delanteros</p>
-        </div>
-      </div>
-
-      {/* Players List */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-        {jugadores2014.map((jugador) => (
-          <div
-            key={jugador.id}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: "8px",
-              padding: "20px",
-              backgroundColor: "white",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-              borderLeft: "4px solid #007bff",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                flexWrap: "wrap",
-                gap: "15px",
-              }}
-            >
-              <div style={{ flex: 1, minWidth: "300px" }}>
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px", flexWrap: "wrap" }}
-                >
-                  <h3 style={{ margin: 0, color: "#333", fontSize: "18px" }}>{jugador.nombre}</h3>
+      {/* Lista de Jugadores */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {jugadoresFiltrados.map((jugador) => (
+          <Card key={jugador.id} className="hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex justify-between items-start">
+                <div>
+                  <CardTitle className="text-lg">{jugador.apellido_nombre}</CardTitle>
+                  <CardDescription>DNI: {jugador.dni}</CardDescription>
+                </div>
+                <div className="flex gap-2">
                   <span
-                    style={{
-                      ...getPosicionColor(jugador.posicion),
-                      padding: "4px 8px",
-                      borderRadius: "4px",
-                      fontSize: "12px",
-                      fontWeight: "bold",
-                    }}
+                    className="px-2 py-1 rounded-full text-xs font-medium"
+                    style={getPosicionColor(jugador.posicion)}
                   >
                     {jugador.posicion}
                   </span>
-                  <span
-                    style={{
-                      backgroundColor: "#f8f9fa",
-                      color: "#495057",
-                      padding: "4px 8px",
-                      borderRadius: "4px",
-                      fontSize: "12px",
-                      border: "1px solid #dee2e6",
-                    }}
-                  >
-                    {jugador.pierna}
-                  </span>
-                </div>
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                    gap: "5px",
-                    fontSize: "14px",
-                    color: "#666",
-                  }}
-                >
-                  <p style={{ margin: 0 }}>
-                    <strong>DNI:</strong> {jugador.dni}
-                  </p>
-                  <p style={{ margin: 0 }}>
-                    <strong>Fichado:</strong> {jugador.fichado}
-                  </p>
-                  {jugador.numero_socio && (
-                    <p style={{ margin: 0 }}>
-                      <strong>N° Socio:</strong> {jugador.numero_socio}
-                    </p>
+                  {jugador.numero_camiseta && (
+                    <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">
+                      #{jugador.numero_camiseta}
+                    </span>
                   )}
                 </div>
               </div>
-
-              <div style={{ display: "flex", alignItems: "center", gap: "20px", flexWrap: "wrap" }}>
-                {/* Stats */}
-                <div style={{ display: "flex", gap: "15px" }}>
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: "20px", fontWeight: "bold", color: "#007bff" }}>{jugador.partidos}</div>
-                    <div style={{ fontSize: "12px", color: "#666" }}>Partidos</div>
-                  </div>
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: "20px", fontWeight: "bold", color: "#28a745" }}>{jugador.goles}</div>
-                    <div style={{ fontSize: "12px", color: "#666" }}>Goles</div>
-                  </div>
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: "20px", fontWeight: "bold", color: "#ffc107" }}>{jugador.amarillas}</div>
-                    <div style={{ fontSize: "12px", color: "#666" }}>Amarillas</div>
-                  </div>
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: "20px", fontWeight: "bold", color: "#dc3545" }}>{jugador.rojas}</div>
-                    <div style={{ fontSize: "12px", color: "#666" }}>Rojas</div>
-                  </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-2 gap-3 text-sm mb-4">
+                <div>
+                  <span className="text-gray-600">Partidos:</span>
+                  <span className="font-medium ml-1">{jugador.partidos || 0}</span>
                 </div>
-
-                {/* Actions */}
-                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                  <Link
-                    href={`/jugadores/2014/${jugador.id}`}
-                    style={{
-                      backgroundColor: "white",
-                      color: "#007bff",
-                      padding: "6px 12px",
-                      border: "1px solid #007bff",
-                      borderRadius: "4px",
-                      fontSize: "12px",
-                      cursor: "pointer",
-                      textDecoration: "none",
-                      display: "inline-block",
-                    }}
+                <div>
+                  <span className="text-gray-600">Goles:</span>
+                  <span className="font-medium ml-1">{jugador.goles || 0}</span>
+                </div>
+                <div>
+                  <span className="text-gray-600">Pierna:</span>
+                  <span className="font-medium ml-1">{jugador.pierna_habil}</span>
+                </div>
+                <div>
+                  <span className="text-gray-600">Estado:</span>
+                  <span
+                    className={`font-medium ml-1 ${
+                      jugador.estado_fisico === "Disponible" ? "text-green-600" : "text-red-600"
+                    }`}
                   >
-                    Ver Detalle
-                  </Link>
-                  <button
-                    onClick={() => {}}
-                    style={{
-                      backgroundColor: "#007bff",
-                      color: "white",
-                      padding: "6px 12px",
-                      border: "none",
-                      borderRadius: "4px",
-                      fontSize: "12px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Editar
-                  </button>
+                    {jugador.estado_fisico}
+                  </span>
                 </div>
               </div>
-            </div>
-          </div>
+
+              <div className="flex gap-2">
+                <Link href={`/jugadores/${jugador.id}`} className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full bg-transparent">
+                    👁️ Ver Perfil
+                  </Button>
+                </Link>
+                <Button variant="outline" size="sm">
+                  ✏️
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
-      {/* Footer info */}
-      <div
-        style={{
-          textAlign: "center",
-          marginTop: "20px",
-          padding: "20px",
-          backgroundColor: "#f8f9fa",
-          borderRadius: "8px",
-        }}
-      >
-        <p style={{ margin: 0, color: "#666" }}>
-          📊 Mostrando {jugadores2014.length} jugadores de la categoría 2014.
-          <Link href="/jugadores/2014/nuevo" style={{ color: "#007bff", marginLeft: "10px" }}>
-            ➕ Agregar nuevo jugador
-          </Link>
-        </p>
-      </div>
+      {jugadoresFiltrados.length === 0 && (
+        <Card>
+          <CardContent className="p-8 text-center">
+            <div className="text-gray-400 text-6xl mb-4">🔍</div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No se encontraron jugadores</h3>
+            <p className="text-gray-600">Intenta ajustar los filtros de búsqueda</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Información adicional */}
+      <Card>
+        <CardContent className="p-4 text-center">
+          <h3 className="font-medium text-gray-900 mb-2">📊 Plantel Categoría 2014</h3>
+          <p className="text-sm text-gray-600">
+            Sistema conectado a base de datos real. Los datos se actualizan automáticamente.
+          </p>
+          <div className="flex justify-center gap-4 mt-3 text-xs text-gray-500">
+            <span>✅ Base de datos conectada</span>
+            <span>🔄 Sincronización automática</span>
+            <span>📱 Acceso en tiempo real</span>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

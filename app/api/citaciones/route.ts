@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { crearCitacion } from "@/lib/database"
+import { crearCitacion } from "../../../lib/database"
 
 export async function POST(request: NextRequest) {
   try {

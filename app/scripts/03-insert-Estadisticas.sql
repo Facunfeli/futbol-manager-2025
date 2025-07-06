@@ -1,33 +1,68 @@
--- Crear un partido de ejemplo
-INSERT INTO partidos (fecha, rival, local, estado) VALUES
-('2024-01-15', 'Club Rival', 1, 'Jugado');
+-- Insertar estadísticas de ejemplo para algunos partidos
+INSERT INTO estadisticas_partidos (jugador_id, partido_id, titular, minutos_jugados, goles, asistencias, tarjetas_amarillas, tarjetas_rojas) VALUES
+-- Partido 1 vs Deportivo Morón
+(1, 1, true, 90, 0, 0, 0, 0),  -- González (Arquero)
+(2, 1, true, 90, 0, 0, 1, 0),  -- Martínez (Defensor)
+(3, 1, true, 90, 0, 1, 0, 0),  -- López (Defensor)
+(4, 1, true, 90, 0, 0, 0, 0),  -- Rodríguez (Defensor)
+(5, 1, true, 90, 0, 0, 0, 0),  -- Fernández (Defensor)
+(6, 1, true, 90, 1, 0, 0, 0),  -- García (Mediocampista)
+(7, 1, true, 90, 0, 2, 0, 0),  -- Pérez (Mediocampista)
+(8, 1, true, 90, 0, 0, 1, 0),  -- Sánchez (Mediocampista)
+(9, 1, true, 75, 0, 1, 0, 0),  -- Romero (Mediocampista)
+(10, 1, true, 90, 2, 0, 0, 0), -- Torres (Delantero)
+(11, 1, true, 90, 1, 1, 0, 0), -- Morales (Delantero)
+(14, 1, false, 15, 0, 0, 0, 0), -- Vargas (suplente)
 
--- Insertar estadísticas basadas en tu tabla (usando el partido_id = 1)
-INSERT INTO estadisticas_partidos (jugador_id, partido_id, titular, minutos_jugados, goles, tarjetas_amarillas, tarjetas_rojas) 
-SELECT 
-    j.id,
-    1 as partido_id,
-    1 as titular,
-    90 as minutos_jugados,
-    CASE 
-        WHEN j.apellido_nombre = 'CATALAN FRANCO' THEN 1
-        WHEN j.apellido_nombre = 'SOSA CIRO' THEN 1
-        WHEN j.apellido_nombre = 'ZABALA BENICIO' THEN 2
-        ELSE 0
-    END as goles,
-    CASE 
-        WHEN j.apellido_nombre = 'AMARILLO MARTIN' THEN 1
-        ELSE 0
-    END as tarjetas_amarillas,
-    0 as tarjetas_rojas
-FROM jugadores j
-WHERE j.apellido_nombre IN (
-    'AMARILLO MARTIN', 'ALVAREZ LORENZO', 'BREY FEDERICO', 'BENITEZ BENJAMIN',
-    'CABALLERO THIAGO', 'LOZANO LORENZO', 'DORADO MATEO', 'CATALAN FRANCO',
-    'OCHOA ALEJO', 'TORRES THIAGO', 'ZACHOZY BASTIAN', 'SOSA CIRO',
-    'CABRAL MAXIMO', 'ZABALA BENICIO', 'FERNANDEZ BASTIAN', 'ORTEGA SANTINO',
-    'RAMON LUCIO', 'PEÑIALBA MILO', 'QUINTEROS LAUTARO', 'PORCO BENJAMIN',
-    'LEGUIZA PEDRO', 'OBELAR SIMON', 'CARLOMANGO DANTE', 'BENTOS JULIAN',
-    'VITO CASTILLO LEON', 'CONSTANZO GINO', 'YTIEL SANCHEZ', 'MARTINEZ BAUTISTA',
-    'MACRI MATIAS', 'MOSQUERA JOAQUIN', 'GONZALEZ ROMEO', 'RODRIGUEZ SCHOEN LEON'
-);
+-- Partido 2 vs San Telmo
+(1, 2, true, 90, 0, 0, 0, 0),  -- González (Arquero)
+(2, 2, true, 90, 0, 0, 0, 0),  -- Martínez (Defensor)
+(3, 2, true, 90, 1, 0, 0, 0),  -- López (Defensor)
+(4, 2, true, 90, 0, 0, 1, 0),  -- Rodríguez (Defensor)
+(16, 2, true, 90, 0, 0, 0, 0), -- Mendoza (Defensor)
+(6, 2, true, 90, 0, 1, 0, 0),  -- García (Mediocampista)
+(7, 2, true, 90, 0, 0, 0, 0),  -- Pérez (Mediocampista)
+(8, 2, true, 60, 0, 0, 0, 0),  -- Sánchez (Mediocampista)
+(17, 2, true, 90, 1, 0, 0, 0), -- Ruiz (Mediocampista)
+(10, 2, true, 90, 0, 1, 0, 0), -- Torres (Delantero)
+(18, 2, true, 90, 1, 0, 0, 0), -- Jiménez (Delantero)
+(14, 2, false, 30, 0, 0, 0, 0), -- Vargas (suplente)
+
+-- Partido 3 vs Estudiantes (BA)
+(12, 3, true, 90, 0, 0, 0, 0), -- Herrera (Arquero)
+(2, 3, true, 90, 0, 0, 0, 0),  -- Martínez (Defensor)
+(13, 3, true, 90, 0, 0, 1, 0), -- Silva (Defensor)
+(4, 3, true, 90, 0, 1, 0, 0),  -- Rodríguez (Defensor)
+(22, 3, true, 90, 0, 0, 0, 0), -- Benítez (Defensor)
+(6, 3, true, 90, 0, 0, 0, 0),  -- García (Mediocampista)
+(23, 3, true, 90, 1, 1, 0, 0), -- Cabrera (Mediocampista)
+(8, 3, true, 90, 0, 0, 0, 0),  -- Sánchez (Mediocampista)
+(20, 3, true, 90, 0, 2, 0, 0), -- Vega (Mediocampista)
+(15, 3, true, 90, 2, 0, 0, 0), -- Castro (Delantero)
+(24, 3, true, 90, 1, 0, 0, 0), -- Domínguez (Delantero)
+
+-- Partido 4 vs Almirante Brown
+(1, 4, true, 90, 0, 0, 1, 0),  -- González (Arquero)
+(2, 4, true, 90, 0, 0, 0, 0),  -- Martínez (Defensor)
+(3, 4, true, 90, 0, 0, 0, 0),  -- López (Defensor)
+(19, 4, true, 90, 0, 0, 0, 0), -- Ortega (Defensor)
+(5, 4, true, 90, 0, 1, 0, 0),  -- Fernández (Defensor)
+(27, 4, true, 90, 0, 0, 0, 0), -- Guerrero (Mediocampista)
+(7, 4, true, 90, 1, 0, 0, 0),  -- Pérez (Mediocampista)
+(9, 4, true, 90, 0, 1, 1, 0),  -- Romero (Mediocampista)
+(30, 4, true, 90, 0, 0, 0, 0), -- Juárez (Mediocampista)
+(10, 4, true, 90, 1, 1, 0, 0), -- Torres (Delantero)
+(28, 4, true, 90, 0, 0, 0, 0), -- Herrera V. (Delantero)
+
+-- Partido 5 vs Fénix
+(25, 5, true, 90, 0, 0, 0, 0), -- Espinoza (Arquero)
+(26, 5, true, 90, 0, 0, 0, 0), -- Flores (Defensor)
+(3, 5, true, 90, 1, 0, 0, 0),  -- López (Defensor)
+(4, 5, true, 90, 0, 0, 0, 0),  -- Rodríguez (Defensor)
+(29, 5, true, 90, 0, 0, 1, 0), -- Ibarra (Defensor)
+(6, 5, true, 90, 0, 2, 0, 0),  -- García (Mediocampista)
+(14, 5, true, 90, 1, 0, 0, 0), -- Vargas (Mediocampista)
+(8, 5, true, 90, 0, 1, 0, 0),  -- Sánchez (Mediocampista)
+(17, 5, true, 90, 0, 0, 0, 0), -- Ruiz (Mediocampista)
+(21, 5, true, 90, 2, 0, 0, 0), -- Acosta (Delantero)
+(11, 5, true, 90, 1, 1, 0, 0); -- Morales (Delantero)

@@ -1,117 +1,174 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
+import Link from "next/link"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
-export default function PartidosPage() {
-  const router = useRouter()
+interface Jugador {
+  id: number
+  dni: string
+  apellido_nombre: string
+  numero_socio: string
+  fichado: string
+  posicion: string
+  pierna_habil: string
+  telefono: string
+  email: string
+  fecha_nacimiento: string
+  altura: number
+  peso: number
+  numero_camiseta: number
+  estado_fisico: string
+  activo: boolean
+}
+
+export default function JugadoresPage() {
+  const [jugadores, setJugadores] = useState<Jugador[]>([])
+  const [loading, setLoading] = useState(true)
+  const [filtro, setFiltro] = useState("todos")
+
+  useEffect(() => {
+    fetchJugadores()
+  }, [])
+
+  const fetchJugadores = async () => {
+    try {
+      const response = await fetch("/api/jugadores")
+      const data = await response.json()
+      setJugadores(data)
+    } catch (error) {
+      console.error("Error fetching jugadores:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const jugadoresFiltrados = jugadores.filter((jugador) => {
+    if (filtro === "todos") return true
+    return jugador.posicion.toLowerCase() === filtro.toLowerCase()
+  })
+
+  const posiciones = ["todos", "arquero", "defensor", "mediocampista", "delantero"]
+
+  if (loading) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg">Cargando jugadores...</div>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="p-6 space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">📅 Fixtures y Partidos</h1>
-          <p className="text-gray-600 mt-1">Selecciona la categoría para ver el calendario de partidos</p>
-        </div>
-        <button
-          onClick={() => router.push("/")}
-          className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors flex items-center gap-2"
-        >
-          ← Volver al Dashboard
-        </button>
+    <div className="container mx-auto p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Plantel de Jugadores</h1>
+        <Link href="/nuevo-jugador">
+          <Button>Agregar Jugador</Button>
+        </Link>
       </div>
 
-      {/* Category Selection */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
-        {/* Categoría 2014 */}
-        <div className="bg-white p-6 rounded-lg shadow border hover:shadow-lg transition-shadow">
-          <div className="text-center mb-4">
-            <div className="text-4xl mb-2">📅</div>
-            <h2 className="text-2xl font-bold">Partidos 2014</h2>
-            <p className="text-gray-600">Fixture y resultados categoría 2014</p>
-          </div>
-
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-blue-600">6</div>
-                <p className="text-sm text-gray-600">Partidos jugados</p>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-green-600">3</div>
-                <p className="text-sm text-gray-600">Próximos partidos</p>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm">
-                <span className="text-blue-500">⚽</span>
-                <span>Próximo: vs TEMPERLEY</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <span className="text-green-500">📊</span>
-                <span>Resultados completos</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <span className="text-purple-500">📅</span>
-                <span>Calendario actualizado</span>
-              </div>
-            </div>
-
-            <button
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors"
-              onClick={() => router.push("/partidos/2014")}
-            >
-              📅 Ver Fixture 2014
-            </button>
-          </div>
-        </div>
-
-        {/* Categoría 2015 */}
-        <div className="bg-white p-6 rounded-lg shadow border hover:shadow-lg transition-shadow opacity-75">
-          <div className="text-center mb-4">
-            <div className="text-4xl mb-2">📅</div>
-            <h2 className="text-2xl font-bold">Partidos 2015</h2>
-            <p className="text-gray-600">Fixture y resultados categoría 2015</p>
-          </div>
-
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-gray-400">0</div>
-                <p className="text-sm text-gray-600">Partidos programados</p>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-gray-400">0</div>
-                <p className="text-sm text-gray-600">Resultados</p>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <span>⚠️</span>
-                <span>Próximamente</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <span>📅</span>
-                <span>Fixture en preparación</span>
-              </div>
-            </div>
-
-            <button className="w-full bg-gray-400 text-white py-2 px-4 rounded cursor-not-allowed" disabled>
-              📅 Ver Fixture 2015
-            </button>
-          </div>
-        </div>
+      {/* Filtros */}
+      <div className="flex gap-2 mb-6 flex-wrap">
+        {posiciones.map((posicion) => (
+          <Button
+            key={posicion}
+            variant={filtro === posicion ? "default" : "outline"}
+            onClick={() => setFiltro(posicion)}
+            className="capitalize"
+          >
+            {posicion}
+          </Button>
+        ))}
       </div>
 
-      {/* Footer Info */}
-      <div className="bg-blue-50 p-6 rounded-lg">
-        <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">📅 Gestión de Partidos</h3>
-        <p className="text-gray-700">
-          Sistema completo para gestionar fixtures, resultados y estadísticas de partidos por categoría.
-        </p>
+      {/* Estadísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold">{jugadores.length}</div>
+            <div className="text-sm text-gray-600">Total Jugadores</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold">{jugadores.filter((j) => j.posicion === "Arquero").length}</div>
+            <div className="text-sm text-gray-600">Arqueros</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold">{jugadores.filter((j) => j.posicion === "Defensor").length}</div>
+            <div className="text-sm text-gray-600">Defensores</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold">{jugadores.filter((j) => j.posicion === "Mediocampista").length}</div>
+            <div className="text-sm text-gray-600">Mediocampistas</div>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Lista de Jugadores */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {jugadoresFiltrados.map((jugador) => (
+          <Card key={jugador.id} className="hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex justify-between items-start">
+                <CardTitle className="text-lg">{jugador.apellido_nombre}</CardTitle>
+                <Badge variant="secondary">#{jugador.numero_camiseta}</Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Posición:</span>
+                  <Badge variant="outline">{jugador.posicion}</Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Pierna hábil:</span>
+                  <span className="text-sm">{jugador.pierna_habil}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Estado:</span>
+                  <Badge variant={jugador.estado_fisico === "Disponible" ? "default" : "destructive"}>
+                    {jugador.estado_fisico}
+                  </Badge>
+                </div>
+                {jugador.altura && (
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Altura:</span>
+                    <span className="text-sm">{jugador.altura} cm</span>
+                  </div>
+                )}
+                {jugador.peso && (
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Peso:</span>
+                    <span className="text-sm">{jugador.peso} kg</span>
+                  </div>
+                )}
+              </div>
+              <div className="mt-4">
+                <Link href={`/jugadores/${jugador.id}`}>
+                  <Button variant="outline" size="sm" className="w-full bg-transparent">
+                    Ver Detalles
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {jugadoresFiltrados.length === 0 && (
+        <div className="text-center py-8">
+          <p className="text-gray-500">No se encontraron jugadores con el filtro seleccionado.</p>
+        </div>
+      )}
     </div>
   )
 }

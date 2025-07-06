@@ -1,98 +1,148 @@
 "use client"
 
-import Link from "next/link"
 import { useState, useEffect } from "react"
+import Link from "next/link"
 
 interface Jugador {
   id: number
-  nombre: string
+  apellido_nombre: string
   posicion: string
-  partidos: number
-  goles: number
-  amarillas: number
-  rojas: number
+  numero_camiseta?: number
+  estado_fisico: string
 }
 
-interface EstadisticasEquipo {
-  totalPartidos: number
-  victorias: number
-  empates: number
-  derrotas: number
-  golesAFavor: number
-  golesEnContra: number
+interface PosicionCancha {
+  x: number
+  y: number
+  jugador?: Jugador
 }
 
-export default function Estadisticas2014Page() {
+export default function Formaciones2014Page() {
   const [jugadores, setJugadores] = useState<Jugador[]>([])
-  const [estadisticasEquipo, setEstadisticasEquipo] = useState<EstadisticasEquipo>({
-    totalPartidos: 0,
-    victorias: 0,
-    empates: 0,
-    derrotas: 0,
-    golesAFavor: 0,
-    golesEnContra: 0,
-  })
+  const [esquemaSeleccionado, setEsquemaSeleccionado] = useState("4-4-2")
+  const [posiciones, setPosiciones] = useState<PosicionCancha[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    cargarEstadisticas()
+    async function fetchJugadores() {
+      try {
+        const response = await fetch("/api/jugadores?categoria=2014")
+        if (!response.ok) {
+          throw new Error("Error al cargar jugadores")
+        }
+        const data = await response.json()
+        setJugadores(data.filter((j: Jugador) => j.estado_fisico === "Disponible"))
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Error desconocido")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchJugadores()
   }, [])
 
-  const cargarEstadisticas = async () => {
-    try {
-      setLoading(true)
-      const [jugadoresRes, estadisticasRes] = await Promise.all([fetch("/api/jugadores"), fetch("/api/estadisticas")])
+  useEffect(() => {
+    // Configurar posiciones según el esquema
+    const configurarPosiciones = () => {
+      const nuevasPosiciones: PosicionCancha[] = []
 
-      if (!jugadoresRes.ok || !estadisticasRes.ok) {
-        throw new Error("Error cargando estadísticas")
+      switch (esquemaSeleccionado) {
+        case "4-4-2":
+          // Arquero
+          nuevasPosiciones.push({ x: 50, y: 90 })
+          // Defensores
+          nuevasPosiciones.push({ x: 20, y: 70 })
+          nuevasPosiciones.push({ x: 40, y: 70 })
+          nuevasPosiciones.push({ x: 60, y: 70 })
+          nuevasPosiciones.push({ x: 80, y: 70 })
+          // Mediocampistas
+          nuevasPosiciones.push({ x: 20, y: 45 })
+          nuevasPosiciones.push({ x: 40, y: 45 })
+          nuevasPosiciones.push({ x: 60, y: 45 })
+          nuevasPosiciones.push({ x: 80, y: 45 })
+          // Delanteros
+          nuevasPosiciones.push({ x: 35, y: 20 })
+          nuevasPosiciones.push({ x: 65, y: 20 })
+          break
+        case "4-3-3":
+          // Arquero
+          nuevasPosiciones.push({ x: 50, y: 90 })
+          // Defensores
+          nuevasPosiciones.push({ x: 20, y: 70 })
+          nuevasPosiciones.push({ x: 40, y: 70 })
+          nuevasPosiciones.push({ x: 60, y: 70 })
+          nuevasPosiciones.push({ x: 80, y: 70 })
+          // Mediocampistas
+          nuevasPosiciones.push({ x: 30, y: 45 })
+          nuevasPosiciones.push({ x: 50, y: 45 })
+          nuevasPosiciones.push({ x: 70, y: 45 })
+          // Delanteros
+          nuevasPosiciones.push({ x: 20, y: 20 })
+          nuevasPosiciones.push({ x: 50, y: 20 })
+          nuevasPosiciones.push({ x: 80, y: 20 })
+          break
+        case "3-5-2":
+          // Arquero
+          nuevasPosiciones.push({ x: 50, y: 90 })
+          // Defensores
+          nuevasPosiciones.push({ x: 30, y: 70 })
+          nuevasPosiciones.push({ x: 50, y: 70 })
+          nuevasPosiciones.push({ x: 70, y: 70 })
+          // Mediocampistas
+          nuevasPosiciones.push({ x: 15, y: 45 })
+          nuevasPosiciones.push({ x: 35, y: 45 })
+          nuevasPosiciones.push({ x: 50, y: 45 })
+          nuevasPosiciones.push({ x: 65, y: 45 })
+          nuevasPosiciones.push({ x: 85, y: 45 })
+          // Delanteros
+          nuevasPosiciones.push({ x: 40, y: 20 })
+          nuevasPosiciones.push({ x: 60, y: 20 })
+          break
+        default:
+          // 4-4-2 por defecto
+          nuevasPosiciones.push({ x: 50, y: 90 })
+          nuevasPosiciones.push({ x: 20, y: 70 }, { x: 40, y: 70 }, { x: 60, y: 70 }, { x: 80, y: 70 })
+          nuevasPosiciones.push({ x: 20, y: 45 }, { x: 40, y: 45 }, { x: 60, y: 45 }, { x: 80, y: 45 })
+          nuevasPosiciones.push({ x: 35, y: 20 }, { x: 65, y: 20 })
       }
 
-      const jugadoresData = await jugadoresRes.json()
-      const estadisticasData = await estadisticasRes.json()
-
-      setJugadores(jugadoresData)
-      setEstadisticasEquipo(estadisticasData)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error desconocido")
-    } finally {
-      setLoading(false)
+      setPosiciones(nuevasPosiciones)
     }
+
+    configurarPosiciones()
+  }, [esquemaSeleccionado])
+
+  const asignarJugador = (posicionIndex: number, jugador: Jugador) => {
+    const nuevasPosiciones = [...posiciones]
+    // Remover jugador de otras posiciones
+    nuevasPosiciones.forEach((pos) => {
+      if (pos.jugador?.id === jugador.id) {
+        pos.jugador = undefined
+      }
+    })
+    // Asignar a nueva posición
+    nuevasPosiciones[posicionIndex].jugador = jugador
+    setPosiciones(nuevasPosiciones)
   }
 
-  const getPosicionColor = (posicion: string) => {
-    switch (posicion) {
-      case "ARQUERO":
-        return "bg-yellow-100 text-yellow-800"
-      case "DEFENSOR":
-        return "bg-blue-100 text-blue-800"
-      case "VOLANTE":
-        return "bg-green-100 text-green-800"
-      case "DELANTERO":
-        return "bg-red-100 text-red-800"
-      default:
-        return "bg-gray-100 text-gray-800"
-    }
+  const removerJugador = (posicionIndex: number) => {
+    const nuevasPosiciones = [...posiciones]
+    nuevasPosiciones[posicionIndex].jugador = undefined
+    setPosiciones(nuevasPosiciones)
   }
 
-  const goleadores = jugadores
-    .filter((j) => j.goles > 0)
-    .sort((a, b) => b.goles - a.goles)
-    .slice(0, 5)
-
-  const masPartidos = jugadores.sort((a, b) => b.partidos - a.partidos).slice(0, 5)
-
-  const tarjeteros = jugadores
-    .filter((j) => j.amarillas > 0 || j.rojas > 0)
-    .sort((a, b) => b.amarillas + b.rojas * 2 - (a.amarillas + a.rojas * 2))
-    .slice(0, 5)
+  const jugadoresDisponibles = jugadores.filter((jugador) => !posiciones.some((pos) => pos.jugador?.id === jugador.id))
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando estadísticas...</p>
+      <div className="min-h-screen bg-gray-50 p-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Cargando formación...</p>
+          </div>
         </div>
       </div>
     )
@@ -100,230 +150,200 @@ export default function Estadisticas2014Page() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="text-red-600 text-6xl mb-4">⚠️</div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Error al cargar estadísticas</h2>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <button
-            onClick={cargarEstadisticas}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-          >
-            Reintentar
-          </button>
+      <div className="min-h-screen bg-gray-50 p-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+            <h2 className="text-xl font-semibold text-red-800 mb-2">Error</h2>
+            <p className="text-red-600">{error}</p>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">📊 Estadísticas 2014</h1>
-          <p className="text-gray-600">Estadísticas completas de la categoría 2014</p>
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <h1 className="text-3xl font-bold text-gray-900">Formaciones Categoría 2014</h1>
+            <Link href="/formaciones" className="text-green-600 hover:text-green-800 font-medium">
+              ← Volver a Formaciones
+            </Link>
+          </div>
+          <p className="text-gray-600 mt-2">Arrastra y suelta jugadores para crear tu formación táctica</p>
         </div>
-        <div className="flex gap-3">
-          <button
-            onClick={cargarEstadisticas}
-            className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors"
-          >
-            🔄 Actualizar
-          </button>
-          <Link href="/estadisticas">
-            <button className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors">
-              ← Volver
-            </button>
-          </Link>
-        </div>
-      </div>
 
-      {/* Estadísticas del Equipo */}
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-        <div className="bg-white p-4 rounded-lg shadow border text-center">
-          <div className="text-2xl font-bold text-blue-600">{estadisticasEquipo.totalPartidos}</div>
-          <div className="text-sm text-gray-600">Partidos</div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow border text-center">
-          <div className="text-2xl font-bold text-green-600">{estadisticasEquipo.victorias}</div>
-          <div className="text-sm text-gray-600">Victorias</div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow border text-center">
-          <div className="text-2xl font-bold text-yellow-600">{estadisticasEquipo.empates}</div>
-          <div className="text-sm text-gray-600">Empates</div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow border text-center">
-          <div className="text-2xl font-bold text-red-600">{estadisticasEquipo.derrotas}</div>
-          <div className="text-sm text-gray-600">Derrotas</div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow border text-center">
-          <div className="text-2xl font-bold text-blue-600">{estadisticasEquipo.golesAFavor}</div>
-          <div className="text-sm text-gray-600">Goles a Favor</div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow border text-center">
-          <div className="text-2xl font-bold text-gray-600">{estadisticasEquipo.golesEnContra}</div>
-          <div className="text-sm text-gray-600">Goles en Contra</div>
-        </div>
-      </div>
-
-      {/* Rankings */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Goleadores */}
-        <div className="bg-white p-6 rounded-lg shadow border">
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">⚽ Top Goleadores</h2>
-          {goleadores.length > 0 ? (
-            <div className="space-y-3">
-              {goleadores.map((jugador, index) => (
-                <div key={jugador.id} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="text-lg font-bold text-gray-500">#{index + 1}</div>
-                    <div>
-                      <div className="font-medium">{jugador.nombre}</div>
-                      <span className={`px-2 py-1 rounded text-xs ${getPosicionColor(jugador.posicion)}`}>
-                        {jugador.posicion}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="text-xl font-bold text-green-600">{jugador.goles}</div>
-                </div>
-              ))}
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Selector de esquema */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Esquema Táctico</h2>
+              <select
+                value={esquemaSeleccionado}
+                onChange={(e) => setEsquemaSeleccionado(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              >
+                <option value="4-4-2">4-4-2 - Clásico</option>
+                <option value="4-3-3">4-3-3 - Ofensivo</option>
+                <option value="3-5-2">3-5-2 - Mediocampo</option>
+                <option value="4-2-3-1">4-2-3-1 - Moderno</option>
+                <option value="5-3-2">5-3-2 - Defensivo</option>
+              </select>
             </div>
-          ) : (
-            <p className="text-gray-500 text-center">No hay goles registrados</p>
-          )}
-        </div>
 
-        {/* Más Partidos */}
-        <div className="bg-white p-6 rounded-lg shadow border">
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">🏃 Más Partidos</h2>
-          {masPartidos.length > 0 ? (
-            <div className="space-y-3">
-              {masPartidos.map((jugador, index) => (
-                <div key={jugador.id} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="text-lg font-bold text-gray-500">#{index + 1}</div>
-                    <div>
-                      <div className="font-medium">{jugador.nombre}</div>
-                      <span className={`px-2 py-1 rounded text-xs ${getPosicionColor(jugador.posicion)}`}>
-                        {jugador.posicion}
-                      </span>
+            {/* Jugadores disponibles */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Jugadores Disponibles ({jugadoresDisponibles.length})
+              </h2>
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {jugadoresDisponibles.map((jugador) => (
+                  <div
+                    key={jugador.id}
+                    className="p-3 bg-gray-50 rounded-lg cursor-move hover:bg-gray-100 transition-colors"
+                    draggable
+                    onDragStart={(e) => {
+                      e.dataTransfer.setData("jugador", JSON.stringify(jugador))
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-medium text-gray-900">{jugador.apellido_nombre}</h3>
+                        <p className="text-sm text-gray-600">{jugador.posicion}</p>
+                      </div>
+                      {jugador.numero_camiseta && (
+                        <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">
+                          #{jugador.numero_camiseta}
+                        </span>
+                      )}
                     </div>
                   </div>
-                  <div className="text-xl font-bold text-blue-600">{jugador.partidos}</div>
-                </div>
-              ))}
+                ))}
+                {jugadoresDisponibles.length === 0 && (
+                  <p className="text-gray-500 text-center py-4">Todos los jugadores están asignados</p>
+                )}
+              </div>
             </div>
-          ) : (
-            <p className="text-gray-500 text-center">No hay partidos registrados</p>
-          )}
-        </div>
+          </div>
 
-        {/* Tarjetas */}
-        <div className="bg-white p-6 rounded-lg shadow border">
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">🟨 Tarjetas</h2>
-          {tarjeteros.length > 0 ? (
-            <div className="space-y-3">
-              {tarjeteros.map((jugador, index) => (
-                <div key={jugador.id} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="text-lg font-bold text-gray-500">#{index + 1}</div>
-                    <div>
-                      <div className="font-medium">{jugador.nombre}</div>
-                      <span className={`px-2 py-1 rounded text-xs ${getPosicionColor(jugador.posicion)}`}>
-                        {jugador.posicion}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {jugador.amarillas > 0 && (
-                      <span className="bg-yellow-500 text-white px-2 py-1 rounded text-xs">🟨 {jugador.amarillas}</span>
+          {/* Cancha de fútbol */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Cancha - Esquema {esquemaSeleccionado}</h2>
+              <div
+                className="relative bg-green-400 rounded-lg mx-auto"
+                style={{
+                  width: "400px",
+                  height: "600px",
+                  backgroundImage: `
+                    linear-gradient(90deg, rgba(255,255,255,0.1) 50%, transparent 50%),
+                    linear-gradient(rgba(255,255,255,0.1) 50%, transparent 50%)
+                  `,
+                  backgroundSize: "20px 20px",
+                }}
+              >
+                {/* Líneas de la cancha */}
+                <div className="absolute inset-0">
+                  {/* Línea del medio */}
+                  <div className="absolute w-full h-0.5 bg-white top-1/2 transform -translate-y-1/2"></div>
+                  {/* Círculo central */}
+                  <div className="absolute w-16 h-16 border-2 border-white rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                  {/* Áreas */}
+                  <div className="absolute w-32 h-20 border-2 border-white top-2 left-1/2 transform -translate-x-1/2"></div>
+                  <div className="absolute w-32 h-20 border-2 border-white bottom-2 left-1/2 transform -translate-x-1/2"></div>
+                  {/* Arcos */}
+                  <div className="absolute w-16 h-8 border-2 border-white border-b-0 top-0 left-1/2 transform -translate-x-1/2"></div>
+                  <div className="absolute w-16 h-8 border-2 border-white border-t-0 bottom-0 left-1/2 transform -translate-x-1/2"></div>
+                </div>
+
+                {/* Posiciones de jugadores */}
+                {posiciones.map((posicion, index) => (
+                  <div
+                    key={index}
+                    className="absolute w-12 h-12 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+                    style={{
+                      left: `${posicion.x}%`,
+                      top: `${posicion.y}%`,
+                    }}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                      e.preventDefault()
+                      const jugadorData = e.dataTransfer.getData("jugador")
+                      if (jugadorData) {
+                        const jugador = JSON.parse(jugadorData)
+                        asignarJugador(index, jugador)
+                      }
+                    }}
+                  >
+                    {posicion.jugador ? (
+                      <div
+                        className="w-full h-full bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg hover:bg-blue-700 transition-colors"
+                        onClick={() => removerJugador(index)}
+                        title={`${posicion.jugador.apellido_nombre} - Click para remover`}
+                      >
+                        {posicion.jugador.numero_camiseta ||
+                          posicion.jugador.apellido_nombre.split(" ")[0].substring(0, 2)}
+                      </div>
+                    ) : (
+                      <div className="w-full h-full border-2 border-dashed border-white rounded-full flex items-center justify-center text-white text-xs opacity-70 hover:opacity-100 transition-opacity">
+                        +
+                      </div>
                     )}
-                    {jugador.rojas > 0 && (
-                      <span className="bg-red-500 text-white px-2 py-1 rounded text-xs">🟥 {jugador.rojas}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Controles */}
+              <div className="mt-6 flex justify-between items-center">
+                <div className="text-sm text-gray-600">
+                  Jugadores asignados: {posiciones.filter((p) => p.jugador).length}/{posiciones.length}
+                </div>
+                <div className="space-x-2">
+                  <button
+                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
+                    onClick={() => setPosiciones(posiciones.map((p) => ({ ...p, jugador: undefined })))}
+                  >
+                    Limpiar Todo
+                  </button>
+                  <button
+                    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
+                    disabled={posiciones.filter((p) => p.jugador).length < 11}
+                  >
+                    Guardar Formación
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Lista de jugadores asignados */}
+            <div className="mt-6 bg-white rounded-lg shadow-md p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Alineación Actual</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {posiciones.map((posicion, index) => (
+                  <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <span className="text-sm text-gray-600">Posición {index + 1}</span>
+                    {posicion.jugador ? (
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium">{posicion.jugador.apellido_nombre}</span>
+                        <button
+                          onClick={() => removerJugador(index)}
+                          className="text-red-600 hover:text-red-800 text-xs"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-gray-400">Sin asignar</span>
                     )}
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          ) : (
-            <p className="text-gray-500 text-center">No hay tarjetas registradas</p>
-          )}
-        </div>
-      </div>
-
-      {/* Tabla Completa de Jugadores */}
-      <div className="bg-white rounded-lg shadow border">
-        <div className="p-6 border-b">
-          <h2 className="text-xl font-bold">📋 Estadísticas Completas</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Jugador
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Posición
-                </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Partidos
-                </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Goles
-                </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">🟨</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">🟥</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {jugadores.map((jugador) => (
-                <tr key={jugador.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-medium text-gray-900">{jugador.nombre}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 rounded text-xs ${getPosicionColor(jugador.posicion)}`}>
-                      {jugador.posicion}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">{jugador.partidos}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-green-600">
-                    {jugador.goles}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-yellow-600">
-                    {jugador.amarillas}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-red-600">{jugador.rojas}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Información del Sistema */}
-      <div className="bg-gray-50 p-6 rounded-lg border text-center">
-        <h3 className="font-medium text-gray-900 mb-2">📊 Estadísticas Categoría 2014</h3>
-        <p className="text-sm text-gray-600 mb-3">
-          Datos actualizados en tiempo real desde la base de datos. Incluye todas las estadísticas del torneo.
-        </p>
-        <div className="flex justify-center gap-4 text-xs text-gray-500">
-          <span className="flex items-center gap-1">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            {jugadores.length} jugadores
-          </span>
-          <span className="flex items-center gap-1">
-            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-            {estadisticasEquipo.totalPartidos} partidos
-          </span>
-          <span className="flex items-center gap-1">
-            <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-            Datos sincronizados
-          </span>
+          </div>
         </div>
       </div>
     </div>
   )
 }
+
