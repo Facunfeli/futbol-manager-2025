@@ -1,26 +1,17 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { obtenerPartidos, crearPartido } from "@/lib/database"
+import { NextResponse } from "next/server";
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
+import * as schema from "@/db/schema";
+
+const sql = neon(process.env.DATABASE_URL!);
+const db = drizzle(sql, { schema });
 
 export async function GET() {
   try {
-    const partidos = await obtenerPartidos()
-    return NextResponse.json(partidos)
+    const partidos = await db.select().from(schema.partidos);
+    return NextResponse.json(partidos);
   } catch (error) {
-    console.error("Error en API partidos:", error)
-    return NextResponse.json({ error: "Error obteniendo partidos" }, { status: 500 })
+    console.error("Error fetching partidos:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
-
-export async function POST(request: NextRequest) {
-  try {
-    const partidoData = await request.json()
-
-    const nuevoPartido = await crearPartido(partidoData)
-
-    return NextResponse.json(nuevoPartido, { status: 201 })
-  } catch (error) {
-    console.error("Error creando partido:", error)
-    return NextResponse.json({ error: "Error creando partido" }, { status: 500 })
-  }
-}
-

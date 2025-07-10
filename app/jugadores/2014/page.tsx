@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card" // Añadido CardDescription
 import { Button } from "@/components/ui/button"
 
 interface Jugador {
@@ -59,11 +59,9 @@ export default function Jugadores2014Page() {
     try {
       setLoading(true)
       const response = await fetch("/api/jugadores?anio=2014")
-
       if (!response.ok) {
         throw new Error("Error cargando jugadores")
       }
-
       const data = await response.json()
       setJugadores(data)
     } catch (err) {
@@ -218,7 +216,7 @@ export default function Jugadores2014Page() {
             </div>
             <div className="flex items-end">
               <Button onClick={cargarJugadores} variant="outline" className="w-full bg-transparent">
-                �� Actualizar
+                🔄 Actualizar
               </Button>
             </div>
           </div>
