@@ -10,22 +10,31 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.1",
+    "autoprefixer": "^10.0.1",
+    "drizzle-orm": "^0.44.2",
     "next": "14.0.0",
+    "postcss": "^8",
     "react": "^18",
     "react-dom": "^18",
-    "autoprefixer": "^10.0.1", 
-    "postcss": "^8",          
-    "tailwindcss": "^3.3.0"   
+    "tailwindcss": "^3.3.0"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
-    "eslint-config-next": "14.0.0"
+    "eslint-config-next": "14.0.0",
+    "typescript": "^5"
   },
-  "keywords": ["futbol", "deportes", "gestion", "equipos", "estadisticas", "nextjs"],
+  "keywords": [
+    "futbol",
+    "deportes",
+    "gestion",
+    "equipos",
+    "estadisticas",
+    "nextjs"
+  ],
   "author": "Tu Nombre",
   "license": "MIT"
 }

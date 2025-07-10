@@ -115,12 +115,12 @@ export default function HomePage() {
     const golesRival = partido.local ? partido.resultado_visitante : partido.resultado_local
 
     if (nuestrosGoles > golesRival) {
-      return <Badge className="bg-green-500">Victoria</Badge>
+      return <Badge className="bg-green-500 text-white">Victoria</Badge>
     } else if (nuestrosGoles < golesRival) {
       return <Badge variant="destructive">Derrota</Badge>
     } else {
       return (
-        <Badge variant="secondary" className="bg-yellow-500">
+        <Badge variant="secondary" className="bg-yellow-500 text-white">
           Empate
         </Badge>
       )
@@ -303,25 +303,25 @@ export default function HomePage() {
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link href="/jugadores">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 bg-transparent">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
                 <span className="text-2xl">👥</span>
                 <span>Jugadores</span>
               </Button>
             </Link>
             <Link href="/partidos">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 bg-transparent">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
                 <span className="text-2xl">⚽</span>
                 <span>Partidos</span>
               </Button>
             </Link>
             <Link href="/estadisticas">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 bg-transparent">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
                 <span className="text-2xl">📊</span>
                 <span>Estadísticas</span>
               </Button>
             </Link>
             <Link href="/formaciones">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 bg-transparent">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
                 <span className="text-2xl">🎯</span>
                 <span>Formaciones</span>
               </Button>

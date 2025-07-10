@@ -1,29 +1,44 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { obtenerJugadores, crearJugador } from "@/lib/database"
+import { type NextRequest, NextResponse } from "next\server"
+import { obtenerJugadorPorId, actualizarJugador, eliminarJugador } from "..\..\..\..\lib\database.ts"
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const { searchParams } = new URL(request.url)
-    const anio = searchParams.get("anio")
+    const id = Number.parseInt(params.id)
+    const jugador = await obtenerJugadorPorId(id)
 
-    const jugadores = await obtenerJugadores(anio ? Number.parseInt(anio) : undefined)
+    if (!jugador) {
+      return NextResponse.json({ error: "Jugador no encontrado" }, { status: 404 })
+    }
 
-    return NextResponse.json(jugadores)
+    return NextResponse.json(jugador)
   } catch (error) {
-    console.error("Error en API jugadores:", error)
-    return NextResponse.json({ error: "Error obteniendo jugadores" }, { status: 500 })
+    console.error("Error obteniendo jugador:", error)
+    return NextResponse.json({ error: "Error obteniendo jugador" }, { status: 500 })
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
+    const id = Number.parseInt(params.id)
     const jugadorData = await request.json()
 
-    const nuevoJugador = await crearJugador(jugadorData)
+    const jugadorActualizado = await actualizarJugador(id, jugadorData)
 
-    return NextResponse.json(nuevoJugador, { status: 201 })
+    return NextResponse.json(jugadorActualizado)
   } catch (error) {
-    console.error("Error creando jugador:", error)
-    return NextResponse.json({ error: "Error creando jugador" }, { status: 500 })
+    console.error("Error actualizando jugador:", error)
+    return NextResponse.json({ error: "Error actualizando jugador" }, { status: 500 })
+  }
+}
+
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const id = Number.parseInt(params.id)
+    await eliminarJugador(id)
+
+    return NextResponse.json({ message: "Jugador eliminado correctamente" })
+  } catch (error) {
+    console.error("Error eliminando jugador:", error)
+    return NextResponse.json({ error: "Error eliminando jugador" }, { status: 500 })
   }
 }
