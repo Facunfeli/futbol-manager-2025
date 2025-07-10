@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "components/ui/button"
-import { Badge } from "components/ui/badge"
+import { Button } from "@/components/ui/button" // Corregido: usar @
+import { Badge } from "@/components/ui/badge" // Corregido: usar @
 
 interface Citacion {
   id: number
