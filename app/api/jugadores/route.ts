@@ -1,10 +1,9 @@
-import { type NextRequest, NextResponse } from "next/server"; // Corregido: usar / en lugar de \
-import { obtenerJugadorPorId, actualizarJugador, eliminarJugador } from "@/lib/database"; // Corregido: usar @
+import { NextResponse } from "next/server";
+import { obtenerJugadores } from "@/lib/database";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    // Ejemplo: Obtener todos los jugadores
-    const jugadores = await obtenerJugadorPorId(); // Ajusta según la función real
+    const jugadores = await obtenerJugadores();
     return NextResponse.json(jugadores);
   } catch (error) {
     console.error("Error obteniendo jugadores:", error);
@@ -15,7 +14,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const jugadorData = await request.json();
-    const nuevoJugador = await actualizarJugador(0, jugadorData); // Ajusta según la función real
+    const nuevoJugador = await crearJugador(jugadorData);
     return NextResponse.json(nuevoJugador, { status: 201 });
   } catch (error) {
     console.error("Error creando jugador:", error);

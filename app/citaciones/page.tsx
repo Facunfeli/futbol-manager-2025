@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button" // Corregido: usar @
-import { Badge } from "@/components/ui/badge" // Corregido: usar @
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 interface Citacion {
   id: number
@@ -15,6 +15,7 @@ interface Citacion {
   fecha_citacion: string
   jugador_nombre: string
   jugador_posicion: string
+  jugador_categoria: string // Añadido
   partido_rival: string
   partido_fecha: string
   partido_local: boolean
@@ -32,15 +33,19 @@ export default function CitacionesPage() {
   const [citaciones, setCitaciones] = useState<Citacion[]>([])
   const [partidos, setPartidos] = useState<Partido[]>([])
   const [partidoSeleccionado, setPartidoSeleccionado] = useState<number | null>(null)
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string | null>(null) // Añadido
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [categoriaSeleccionada]) // Añadido: depender de categoriaSeleccionada
 
   const fetchData = async () => {
     try {
-      const [citacionesRes, partidosRes] = await Promise.all([fetch("/api/citaciones"), fetch("/api/partidos")])
+      const url = categoriaSeleccionada
+        ? `/api/citaciones?categoria=${categoriaSeleccionada}`
+        : "/api/citaciones"
+      const [citacionesRes, partidosRes] = await Promise.all([fetch(url), fetch("/api/partidos")])
 
       const citacionesData = await citacionesRes.json()
       const partidosData = await partidosRes.json()
@@ -48,7 +53,6 @@ export default function CitacionesPage() {
       setCitaciones(citacionesData)
       setPartidos(partidosData.filter((p: Partido) => p.estado === "Programado"))
 
-      // Seleccionar el próximo partido por defecto
       const proximoPartido = partidosData
         .filter((p: Partido) => p.estado === "Programado")
         .sort((a: Partido, b: Partido) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime())[0]
@@ -63,7 +67,9 @@ export default function CitacionesPage() {
     }
   }
 
-  const citacionesFiltradas = partidoSeleccionado ? citaciones.filter((c) => c.partido_id === partidoSeleccionado) : []
+  const citacionesFiltradas = partidoSeleccionado
+    ? citaciones.filter((c) => c.partido_id === partidoSeleccionado)
+    : []
 
   const partidoActual = partidos.find((p) => p.id === partidoSeleccionado)
 
@@ -87,6 +93,32 @@ export default function CitacionesPage() {
         <h1 className="text-3xl font-bold">Citaciones</h1>
         <Button>Nueva Citación</Button>
       </div>
+
+      {/* Selector de Categoría */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Seleccionar Categoría</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-4">
+            {["2014", "2015"].map((categoria) => (
+              <Button
+                key={categoria}
+                variant={categoriaSeleccionada === categoria ? "default" : "outline"}
+                onClick={() => setCategoriaSeleccionada(categoria)}
+              >
+                {categoria}
+              </Button>
+            ))}
+            <Button
+              variant={categoriaSeleccionada === null ? "default" : "outline"}
+              onClick={() => setCategoriaSeleccionada(null)}
+            >
+              Todas
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Selector de Partido */}
       <Card className="mb-6">
@@ -170,7 +202,7 @@ export default function CitacionesPage() {
                         <div>
                           <h4 className="font-medium">{citacion.jugador_nombre}</h4>
                           <Badge variant="outline" className="text-xs">
-                            {citacion.jugador_posicion}
+                            {citacion.jugador_posicion} ({citacion.jugador_categoria})
                           </Badge>
                         </div>
                       </div>

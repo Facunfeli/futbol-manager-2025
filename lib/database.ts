@@ -1,117 +1,122 @@
-import { neon } from "@neondatabase/serverless"
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
+import * as schema from "@/db/schema";
+import { eq } from "drizzle-orm";
 
-const sql = neon(process.env.DATABASE_URL!)
+const sql = neon(process.env.DATABASE_URL!);
+const db = drizzle(sql, { schema });
 
 export interface Jugador {
-  id: number
-  nombre: string
-  apellido: string
-  fecha_nacimiento: string
-  posicion: string
-  numero_camiseta?: number
-  telefono?: string
-  email?: string
-  direccion?: string
-  categoria: string
-  activo: boolean
-  observaciones?: string
-  created_at: string
-  updated_at: string
+  id: number;
+  nombre: string;
+  apellido: string;
+  fecha_nacimiento: string;
+  posicion: string;
+  numero_camiseta?: number;
+  telefono?: string;
+  email?: string;
+  direccion?: string;
+  categoria: string;
+  activo: boolean;
+  observaciones?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Partido {
-  id: number
-  fecha: string
-  rival: string
-  local: boolean
-  resultado_local?: number
-  resultado_visitante?: number
-  estado: string
-  observaciones?: string
-  categoria: string
-  created_at: string
-  updated_at: string
+  id: number;
+  fecha: string;
+  rival: string;
+  local: boolean;
+  resultado_local?: number;
+  resultado_visitante?: number;
+  estado: string;
+  observaciones?: string;
+  categoria: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Estadistica {
-  id: number
-  jugador_id: number
-  partido_id: number
-  goles: number
-  asistencias: number
-  tarjetas_amarillas: number
-  tarjetas_rojas: number
-  minutos_jugados: number
-  created_at: string
-  updated_at: string
+  id: number;
+  jugador_id: number;
+  partido_id: number;
+  goles: number;
+  asistencias: number;
+  tarjetas_amarillas: number;
+  tarjetas_rojas: number;
+  minutos_jugados: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Citacion {
-  id: number
-  partido_id: number
-  jugador_id: number
-  citado: boolean
-  confirmado: boolean
-  observaciones?: string
-  created_at: string
-  updated_at: string
+  id: number;
+  partido_id: number;
+  jugador_id: number;
+  citado: boolean;
+  confirmado: boolean;
+  motivo_ausencia?: string;
+  fecha_citacion: string;
+  observaciones?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 // Funciones para Jugadores
 export async function obtenerJugadores(categoria?: string): Promise<Jugador[]> {
   try {
-    let query = "SELECT * FROM jugadores WHERE activo = true"
-    const params: any[] = []
-
+    let query = db.select().from(schema.jugadores).where(eq(schema.jugadores.activo, true));
     if (categoria) {
-      query += " AND categoria = $1"
-      params.push(categoria)
+      query = query.where(eq(schema.jugadores.categoria, categoria));
     }
-
-    query += " ORDER BY apellido, nombre"
-
-    const result = await sql(query, params)
-    return result as Jugador[]
+    query = query.orderBy(schema.jugadores.apellido, schema.jugadores.nombre);
+    const result = await query;
+    return result as Jugador[];
   } catch (error) {
-    console.error("Error obteniendo jugadores:", error)
-    throw new Error("Error obteniendo jugadores")
+    console.error("Error obteniendo jugadores:", error);
+    throw new Error("Error obteniendo jugadores");
   }
 }
 
 export async function obtenerJugadorPorId(id: number): Promise<Jugador | null> {
   try {
-    const result = await sql("SELECT * FROM jugadores WHERE id = $1", [id])
-    return result.length > 0 ? (result[0] as Jugador) : null
+    const result = await db
+      .select()
+      .from(schema.jugadores)
+      .where(eq(schema.jugadores.id, id))
+      .limit(1);
+    return result.length > 0 ? (result[0] as Jugador) : null;
   } catch (error) {
-    console.error("Error obteniendo jugador:", error)
-    throw new Error("Error obteniendo jugador")
+    console.error("Error obteniendo jugador:", error);
+    throw new Error("Error obteniendo jugador");
   }
 }
 
-export async function crearJugador(jugador: Omit<Jugador, "id" | "created_at" | "updated_at">): Promise<Jugador> {
+export async function crearJugador(
+  jugador: Omit<Jugador, "id" | "created_at" | "updated_at">,
+): Promise<Jugador> {
   try {
-    const result = await sql(
-      `INSERT INTO jugadores (nombre, apellido, fecha_nacimiento, posicion, numero_camiseta, telefono, email, direccion, categoria, activo, observaciones)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-       RETURNING *`,
-      [
-        jugador.nombre,
-        jugador.apellido,
-        jugador.fecha_nacimiento,
-        jugador.posicion,
-        jugador.numero_camiseta,
-        jugador.telefono,
-        jugador.email,
-        jugador.direccion,
-        jugador.categoria,
-        jugador.activo,
-        jugador.observaciones,
-      ],
-    )
-    return result[0] as Jugador
+    const result = await db
+      .insert(schema.jugadores)
+      .values({
+        nombre: jugador.nombre,
+        apellido: jugador.apellido,
+        fecha_nacimiento: jugador.fecha_nacimiento,
+        posicion: jugador.posicion,
+        numero_camiseta: jugador.numero_camiseta,
+        telefono: jugador.telefono,
+        email: jugador.email,
+        direccion: jugador.direccion,
+        categoria: jugador.categoria,
+        activo: jugador.activo,
+        observaciones: jugador.observaciones,
+      })
+      .returning();
+    return result[0] as Jugador;
   } catch (error) {
-    console.error("Error creando jugador:", error)
-    throw new Error("Error creando jugador")
+    console.error("Error creando jugador:", error);
+    throw new Error("Error creando jugador");
   }
 }
 
@@ -120,85 +125,81 @@ export async function actualizarJugador(
   jugador: Partial<Omit<Jugador, "id" | "created_at" | "updated_at">>,
 ): Promise<Jugador> {
   try {
-    const fields = Object.keys(jugador)
-      .map((key, index) => `${key} = $${index + 2}`)
-      .join(", ")
-
-    const values = Object.values(jugador)
-
-    const result = await sql(
-      `UPDATE jugadores SET ${fields}, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *`,
-      [id, ...values],
-    )
-
-    return result[0] as Jugador
+    const result = await db
+      .update(schema.jugadores)
+      .set({ ...jugador, updated_at: new Date().toISOString() })
+      .where(eq(schema.jugadores.id, id))
+      .returning();
+    return result[0] as Jugador;
   } catch (error) {
-    console.error("Error actualizando jugador:", error)
-    throw new Error("Error actualizando jugador")
+    console.error("Error actualizando jugador:", error);
+    throw new Error("Error actualizando jugador");
   }
 }
 
 export async function eliminarJugador(id: number): Promise<void> {
   try {
-    await sql("UPDATE jugadores SET activo = false WHERE id = $1", [id])
+    await db
+      .update(schema.jugadores)
+      .set({ activo: false })
+      .where(eq(schema.jugadores.id, id));
   } catch (error) {
-    console.error("Error eliminando jugador:", error)
-    throw new Error("Error eliminando jugador")
+    console.error("Error eliminando jugador:", error);
+    throw new Error("Error eliminando jugador");
   }
 }
 
 // Funciones para Partidos
 export async function obtenerPartidos(categoria?: string): Promise<Partido[]> {
   try {
-    let query = "SELECT * FROM partidos"
-    const params: any[] = []
-
+    let query = db.select().from(schema.partidos);
     if (categoria) {
-      query += " WHERE categoria = $1"
-      params.push(categoria)
+      query = query.where(eq(schema.partidos.categoria, categoria));
     }
-
-    query += " ORDER BY fecha DESC"
-
-    const result = await sql(query, params)
-    return result as Partido[]
+    query = query.orderBy(schema.partidos.fecha.desc());
+    const result = await query;
+    return result as Partido[];
   } catch (error) {
-    console.error("Error obteniendo partidos:", error)
-    throw new Error("Error obteniendo partidos")
+    console.error("Error obteniendo partidos:", error);
+    throw new Error("Error obteniendo partidos");
   }
 }
 
 export async function obtenerPartidoPorId(id: number): Promise<Partido | null> {
   try {
-    const result = await sql("SELECT * FROM partidos WHERE id = $1", [id])
-    return result.length > 0 ? (result[0] as Partido) : null
+    const result = await db
+      .select()
+      .from(schema.partidos)
+      .where(eq(schema.partidos.id, id))
+      .limit(1);
+    return result.length > 0 ? (result[0] as Partido) : null;
   } catch (error) {
-    console.error("Error obteniendo partido:", error)
-    throw new Error("Error obteniendo partido")
+    console.error("Error obteniendo partido:", error);
+    throw new Error("Error obteniendo partido");
   }
 }
 
-export async function crearPartido(partido: Omit<Partido, "id" | "created_at" | "updated_at">): Promise<Partido> {
+export async function crearPartido(
+  partido: Omit<Partido, "id" | "created_at" | "updated_at">,
+): Promise<Partido> {
   try {
-    const result = await sql(
-      `INSERT INTO partidos (fecha, rival, local, resultado_local, resultado_visitante, estado, observaciones, categoria)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING *`,
-      [
-        partido.fecha,
-        partido.rival,
-        partido.local,
-        partido.resultado_local,
-        partido.resultado_visitante,
-        partido.estado,
-        partido.observaciones,
-        partido.categoria,
-      ],
-    )
-    return result[0] as Partido
+    const result = await db
+      .insert(schema.partidos)
+      .values({
+        fecha: partido.fecha,
+        rival: partido.rival,
+        local: partido.local,
+        resultado_local: partido.resultado_local,
+        resultado_visitante: partido.resultado_visitante,
+        estado: partido.estado,
+        observaciones: partido.observaciones,
+        categoria: partido.categoria,
+      })
+      .returning();
+    return result[0] as Partido;
   } catch (error) {
-    console.error("Error creando partido:", error)
-    throw new Error("Error creando partido")
+    console.error("Error creando partido:", error);
+    throw new Error("Error creando partido");
   }
 }
 
@@ -207,50 +208,37 @@ export async function actualizarPartido(
   partido: Partial<Omit<Partido, "id" | "created_at" | "updated_at">>,
 ): Promise<Partido> {
   try {
-    const fields = Object.keys(partido)
-      .map((key, index) => `${key} = $${index + 2}`)
-      .join(", ")
-
-    const values = Object.values(partido)
-
-    const result = await sql(
-      `UPDATE partidos SET ${fields}, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *`,
-      [id, ...values],
-    )
-
-    return result[0] as Partido
+    const result = await db
+      .update(schema.partidos)
+      .set({ ...partido, updated_at: new Date().toISOString() })
+      .where(eq(schema.partidos.id, id))
+      .returning();
+    return result[0] as Partido;
   } catch (error) {
-    console.error("Error actualizando partido:", error)
-    throw new Error("Error actualizando partido")
+    console.error("Error actualizando partido:", error);
+    throw new Error("Error actualizando partido");
   }
 }
 
 // Funciones para Estadísticas
-export async function obtenerEstadisticas(jugadorId?: number, partidoId?: number): Promise<Estadistica[]> {
+export async function obtenerEstadisticas(
+  jugadorId?: number,
+  partidoId?: number,
+): Promise<Estadistica[]> {
   try {
-    let query = "SELECT * FROM estadisticas WHERE 1=1"
-    const params: any[] = []
-    let paramIndex = 1
-
+    let query = db.select().from(schema.estadisticas);
     if (jugadorId) {
-      query += ` AND jugador_id = $${paramIndex}`
-      params.push(jugadorId)
-      paramIndex++
+      query = query.where(eq(schema.estadisticas.jugador_id, jugadorId));
     }
-
     if (partidoId) {
-      query += ` AND partido_id = $${paramIndex}`
-      params.push(partidoId)
-      paramIndex++
+      query = query.where(eq(schema.estadisticas.partido_id, partidoId));
     }
-
-    query += " ORDER BY created_at DESC"
-
-    const result = await sql(query, params)
-    return result as Estadistica[]
+    query = query.orderBy(schema.estadisticas.created_at.desc());
+    const result = await query;
+    return result as Estadistica[];
   } catch (error) {
-    console.error("Error obteniendo estadísticas:", error)
-    throw new Error("Error obteniendo estadísticas")
+    console.error("Error obteniendo estadísticas:", error);
+    throw new Error("Error obteniendo estadísticas");
   }
 }
 
@@ -258,60 +246,78 @@ export async function crearEstadistica(
   estadistica: Omit<Estadistica, "id" | "created_at" | "updated_at">,
 ): Promise<Estadistica> {
   try {
-    const result = await sql(
-      `INSERT INTO estadisticas (jugador_id, partido_id, goles, asistencias, tarjetas_amarillas, tarjetas_rojas, minutos_jugados)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
-       RETURNING *`,
-      [
-        estadistica.jugador_id,
-        estadistica.partido_id,
-        estadistica.goles,
-        estadistica.asistencias,
-        estadistica.tarjetas_amarillas,
-        estadistica.tarjetas_rojas,
-        estadistica.minutos_jugados,
-      ],
-    )
-    return result[0] as Estadistica
+    const result = await db
+      .insert(schema.estadisticas)
+      .values({
+        jugador_id: estadistica.jugador_id,
+        partido_id: estadistica.partido_id,
+        goles: estadistica.goles,
+        asistencias: estadistica.asistencias,
+        tarjetas_amarillas: estadistica.tarjetas_amarillas,
+        tarjetas_rojas: estadistica.tarjetas_rojas,
+        minutos_jugados: estadistica.minutos_jugados,
+      })
+      .returning();
+    return result[0] as Estadistica;
   } catch (error) {
-    console.error("Error creando estadística:", error)
-    throw new Error("Error creando estadística")
+    console.error("Error creando estadística:", error);
+    throw new Error("Error creando estadística");
   }
 }
 
 // Funciones para Citaciones
-export async function obtenerCitaciones(partidoId?: number): Promise<Citacion[]> {
+export async function obtenerCitaciones(partidoId?: number, categoria?: string): Promise<Citacion[]> {
   try {
-    let query = "SELECT * FROM citaciones"
-    const params: any[] = []
-
+    let query = db
+      .select({
+        id: schema.citaciones.id,
+        partido_id: schema.citaciones.partido_id,
+        jugador_id: schema.citaciones.jugador_id,
+        citado: schema.citaciones.citado,
+        confirmado: schema.citaciones.confirmado,
+        motivo_ausencia: schema.citaciones.motivo_ausencia,
+        fecha_citacion: schema.citaciones.fecha_citacion,
+        observaciones: schema.citaciones.observaciones,
+        created_at: schema.citaciones.created_at,
+        updated_at: schema.citaciones.updated_at,
+      })
+      .from(schema.citaciones)
+      .leftJoin(schema.jugadores, eq(schema.citaciones.jugador_id, schema.jugadores.id));
     if (partidoId) {
-      query += " WHERE partido_id = $1"
-      params.push(partidoId)
+      query = query.where(eq(schema.citaciones.partido_id, partidoId));
     }
-
-    query += " ORDER BY created_at DESC"
-
-    const result = await sql(query, params)
-    return result as Citacion[]
+    if (categoria) {
+      query = query.where(eq(schema.jugadores.categoria, categoria));
+    }
+    query = query.orderBy(schema.citaciones.created_at.desc());
+    const result = await query;
+    return result as Citacion[];
   } catch (error) {
-    console.error("Error obteniendo citaciones:", error)
-    throw new Error("Error obteniendo citaciones")
+    console.error("Error obteniendo citaciones:", error);
+    throw new Error("Error obteniendo citaciones");
   }
 }
 
-export async function crearCitacion(citacion: Omit<Citacion, "id" | "created_at" | "updated_at">): Promise<Citacion> {
+export async function crearCitacion(
+  citacion: Omit<Citacion, "id" | "created_at" | "updated_at">,
+): Promise<Citacion> {
   try {
-    const result = await sql(
-      `INSERT INTO citaciones (partido_id, jugador_id, citado, confirmado, observaciones)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING *`,
-      [citacion.partido_id, citacion.jugador_id, citacion.citado, citacion.confirmado, citacion.observaciones],
-    )
-    return result[0] as Citacion
+    const result = await db
+      .insert(schema.citaciones)
+      .values({
+        partido_id: citacion.partido_id,
+        jugador_id: citacion.jugador_id,
+        citado: citacion.citado,
+        confirmado: citacion.confirmado,
+        motivo_ausencia: citacion.motivo_ausencia,
+        fecha_citacion: citacion.fecha_citacion,
+        observaciones: citacion.observaciones,
+      })
+      .returning();
+    return result[0] as Citacion;
   } catch (error) {
-    console.error("Error creando citación:", error)
-    throw new Error("Error creando citación")
+    console.error("Error creando citación:", error);
+    throw new Error("Error creando citación");
   }
 }
 
@@ -322,15 +328,15 @@ export async function obtenerEstadisticasGenerales() {
       obtenerJugadores(),
       obtenerPartidos(),
       obtenerEstadisticas(),
-    ])
+    ]);
 
     return {
       jugadores,
       partidos,
       estadisticas,
-    }
+    };
   } catch (error) {
-    console.error("Error obteniendo estadísticas generales:", error)
-    throw new Error("Error obteniendo estadísticas generales")
+    console.error("Error obteniendo estadísticas generales:", error);
+    throw new Error("Error obteniendo estadísticas generales");
   }
 }

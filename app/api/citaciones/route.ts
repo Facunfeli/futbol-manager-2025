@@ -2,14 +2,17 @@ import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 const sql = neon(process.env.DATABASE_URL!);
 const db = drizzle(sql, { schema });
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    // Suponiendo que tienes una tabla 'citaciones' en schema.ts
-    const citaciones = await db
+    const { searchParams } = new URL(request.url);
+    const categoria = searchParams.get("categoria");
+
+    let query = db
       .select({
         id: schema.citaciones.id,
         partido_id: schema.citaciones.partido_id,
@@ -20,13 +23,20 @@ export async function GET() {
         fecha_citacion: schema.citaciones.fecha_citacion,
         jugador_nombre: schema.jugadores.apellido_nombre,
         jugador_posicion: schema.jugadores.posicion,
+        jugador_categoria: schema.jugadores.categoria, // Añadido
         partido_rival: schema.partidos.rival,
         partido_fecha: schema.partidos.fecha,
         partido_local: schema.partidos.local,
       })
       .from(schema.citaciones)
-      .leftJoin(schema.jugadores, schema.eq(schema.citaciones.jugador_id, schema.jugadores.id))
-      .leftJoin(schema.partidos, schema.eq(schema.citaciones.partido_id, schema.partidos.id));
+      .leftJoin(schema.jugadores, eq(schema.citaciones.jugador_id, schema.jugadores.id))
+      .leftJoin(schema.partidos, eq(schema.citaciones.partido_id, schema.partidos.id));
+
+    if (categoria) {
+      query = query.where(eq(schema.jugadores.categoria, categoria));
+    }
+
+    const citaciones = await query;
 
     return NextResponse.json(citaciones);
   } catch (error) {
