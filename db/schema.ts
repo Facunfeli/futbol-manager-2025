@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, integer, boolean, date } from "drizzle-orm/pg-core";
+import { pgTable, serial, integer, boolean, varchar, date } from "drizzle-orm/pg-core";
 
 export const jugadores = pgTable("jugadores", {
   id: serial("id").primaryKey(),
@@ -33,4 +33,14 @@ export const partidos = pgTable("partidos", {
   resultado_local: integer("resultado_local"),
   resultado_visitante: integer("resultado_visitante"),
   estado: varchar("estado", { length: 20 }),
+});
+
+export const citaciones = pgTable("citaciones", {
+  id: serial("id").primaryKey(),
+  partido_id: integer("partido_id").references(() => partidos.id),
+  jugador_id: integer("jugador_id").references(() => jugadores.id),
+  citado: boolean("citado"),
+  confirmado: boolean("confirmado"),
+  motivo_ausencia: varchar("motivo_ausencia", { length: 100 }),
+  fecha_citacion: date("fecha_citacion"),
 });
