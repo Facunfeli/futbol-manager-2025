@@ -63,3 +63,10 @@
     @apply border-border;
   }
 }
+.custom-card {
+  @apply bg-card text-card-foreground rounded-lg shadow-md;
+}
+
+.custom-button {
+  @apply bg-primary text-white px-4 py-2 rounded;
+}
