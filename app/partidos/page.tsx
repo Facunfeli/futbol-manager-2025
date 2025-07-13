@@ -1,174 +1,93 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
-interface Jugador {
-  id: number
-  dni: string
-  apellido_nombre: string
-  numero_socio: string
-  fichado: string
-  posicion: string
-  pierna_habil: string
-  telefono: string
-  email: string
-  fecha_nacimiento: string
-  altura: number
-  peso: number
-  numero_camiseta: number
-  estado_fisico: string
-  activo: boolean
+interface Partido {
+  id: number;
+  fecha: string;
+  rival: string;
+  local: boolean;
+  resultado_local?: number;
+  resultado_visitante?: number;
+  estado: string;
+  observaciones?: string;
+  categoria: string;
+  created_at: string;
+  updated_at: string;
 }
 
-export default function JugadoresPage() {
-  const [jugadores, setJugadores] = useState<Jugador[]>([])
-  const [loading, setLoading] = useState(true)
-  const [filtro, setFiltro] = useState("todos")
+export default function PartidosPage() {
+  const [partidos, setPartidos] = useState<Partido[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchJugadores()
-  }, [])
-
-  const fetchJugadores = async () => {
-    try {
-      const response = await fetch("/api/jugadores")
-      const data = await response.json()
-      setJugadores(data)
-    } catch (error) {
-      console.error("Error fetching jugadores:", error)
-    } finally {
-      setLoading(false)
+    async function fetchPartidos() {
+      try {
+        const res = await fetch("/api/partidos");
+        if (!res.ok) throw new Error("Error fetching partidos");
+        const data = await res.json();
+        setPartidos(data);
+      } catch (error) {
+        console.error("Error fetching partidos:", error);
+      } finally {
+        setLoading(false);
+      }
     }
-  }
-
-  const jugadoresFiltrados = jugadores.filter((jugador) => {
-    if (filtro === "todos") return true
-    return jugador.posicion.toLowerCase() === filtro.toLowerCase()
-  })
-
-  const posiciones = ["todos", "arquero", "defensor", "mediocampista", "delantero"]
+    fetchPartidos();
+  }, []);
 
   if (loading) {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="flex justify-center items-center h-64">
-          <div className="text-lg">Cargando jugadores...</div>
-        </div>
-      </div>
-    )
+    return <div className="p-6">Cargando partidos...</div>;
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Plantel de Jugadores</h1>
-        <Link href="/nuevo-jugador">
-          <Button>Agregar Jugador</Button>
-        </Link>
-      </div>
-
-      {/* Filtros */}
-      <div className="flex gap-2 mb-6 flex-wrap">
-        {posiciones.map((posicion) => (
-          <Button
-            key={posicion}
-            variant={filtro === posicion ? "default" : "outline"}
-            onClick={() => setFiltro(posicion)}
-            className="capitalize"
-          >
-            {posicion}
-          </Button>
-        ))}
-      </div>
-
-      {/* Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold">{jugadores.length}</div>
-            <div className="text-sm text-gray-600">Total Jugadores</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold">{jugadores.filter((j) => j.posicion === "Arquero").length}</div>
-            <div className="text-sm text-gray-600">Arqueros</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold">{jugadores.filter((j) => j.posicion === "Defensor").length}</div>
-            <div className="text-sm text-gray-600">Defensores</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold">{jugadores.filter((j) => j.posicion === "Mediocampista").length}</div>
-            <div className="text-sm text-gray-600">Mediocampistas</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Lista de Jugadores */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {jugadoresFiltrados.map((jugador) => (
-          <Card key={jugador.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex justify-between items-start">
-                <CardTitle className="text-lg">{jugador.apellido_nombre}</CardTitle>
-                <Badge variant="secondary">#{jugador.numero_camiseta}</Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Posición:</span>
-                  <Badge variant="outline">{jugador.posicion}</Badge>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Pierna hábil:</span>
-                  <span className="text-sm">{jugador.pierna_habil}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Estado:</span>
-                  <Badge variant={jugador.estado_fisico === "Disponible" ? "default" : "destructive"}>
-                    {jugador.estado_fisico}
-                  </Badge>
-                </div>
-                {jugador.altura && (
+    <div className="p-6">
+      <h1 className="text-3xl font-bold mb-6">Partidos</h1>
+      <Card>
+        <CardHeader>
+          <CardTitle>Lista de Partidos</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {partidos.length === 0 ? (
+            <p>No hay partidos disponibles.</p>
+          ) : (
+            <div className="space-y-4">
+              {partidos.map((partido) => (
+                <div key={partido.id} className="border p-4 rounded-lg">
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Altura:</span>
-                    <span className="text-sm">{jugador.altura} cm</span>
+                    <div>
+                      <h3 className="font-semibold">vs {partido.rival}</h3>
+                      <p className="text-sm text-gray-600">
+                        {new Date(partido.fecha).toLocaleDateString("es-AR")} - {partido.categoria}
+                      </p>
+                      <Badge variant={partido.local ? "default" : "outline"}>
+                        {partido.local ? "LOCAL" : "VISITANTE"}
+                      </Badge>
+                    </div>
+                    <div>
+                      {partido.resultado_local !== undefined && partido.resultado_visitante !== undefined ? (
+                        <p className="font-bold">
+                          {partido.resultado_local} - {partido.resultado_visitante}
+                        </p>
+                      ) : (
+                        <p>Sin resultado</p>
+                      )}
+                    </div>
                   </div>
-                )}
-                {jugador.peso && (
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Peso:</span>
-                    <span className="text-sm">{jugador.peso} kg</span>
-                  </div>
-                )}
-              </div>
-              <div className="mt-4">
-                <Link href={`/jugadores/${jugador.id}`}>
-                  <Button variant="outline" size="sm" className="w-full bg-transparent">
-                    Ver Detalles
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {jugadoresFiltrados.length === 0 && (
-        <div className="text-center py-8">
-          <p className="text-gray-500">No se encontraron jugadores con el filtro seleccionado.</p>
-        </div>
-      )}
+                  <Link href={`/partidos/${partido.id}`}>
+                    <button className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                      Ver Detalles
+                    </button>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
-  )
+  );
 }
