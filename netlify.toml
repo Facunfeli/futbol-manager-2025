@@ -1,16 +1,19 @@
 [build]
-  command = "npm run build"
-  publish = "out"
+  command = "npm install && npm run build"
+  publish = ".next"
+  environment = { NODE_VERSION = "18" }
 
 [build.environment]
   NODE_VERSION = "18"
   NODE_ENV = "production"
 
 # Redirects para SPA
+
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
   status = 200
+  force = true
 
 # Headers para PWA y optimización
 [[headers]]

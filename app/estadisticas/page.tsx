@@ -1,62 +1,70 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface EstadisticaJugador {
-  jugador_id: number
-  apellido_nombre: string
-  posicion: string
-  partidos_jugados: number
-  minutos_totales: number
-  goles: number
-  asistencias: number
-  tarjetas_amarillas: number
-  tarjetas_rojas: number
-  promedio_minutos: number
+  id: number;
+  jugador_id: number;
+  partido_id: number;
+  goles: number;
+  asistencias: number;
+  tarjetas_amarillas: number;
+  tarjetas_rojas: number;
+  minutos_jugados: number;
+  created_at: string;
+  updated_at: string;
+  jugador_nombre: string;
+  jugador_apellido: string;
+  posicion: string;
+  categoria: string;
 }
 
 export default function EstadisticasPage() {
-  const [estadisticas, setEstadisticas] = useState<EstadisticaJugador[]>([])
-  const [loading, setLoading] = useState(true)
-  const [ordenPor, setOrdenPor] = useState("goles")
+  const [estadisticas, setEstadisticas] = useState<EstadisticaJugador[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [ordenPor, setOrdenPor] = useState("goles");
+  const [categoria, setCategoria] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchEstadisticas()
-  }, [])
+    fetchEstadisticas();
+  }, [categoria]);
 
   const fetchEstadisticas = async () => {
     try {
-      const response = await fetch("/api/estadisticas")
-      const data = await response.json()
-      setEstadisticas(data)
+      const url = categoria ? `/api/estadisticas?categoria=${categoria}` : "/api/estadisticas";
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Error fetching estadisticas");
+      const data = await response.json();
+      setEstadisticas(data);
     } catch (error) {
-      console.error("Error fetching estadisticas:", error)
+      console.error("Error fetching estadisticas:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const estadisticasOrdenadas = [...estadisticas].sort((a, b) => {
     switch (ordenPor) {
       case "goles":
-        return b.goles - a.goles
+        return b.goles - a.goles;
       case "asistencias":
-        return b.asistencias - a.asistencias
+        return b.asistencias - a.asistencias;
       case "partidos":
-        return b.partidos_jugados - a.partidos_jugados
+        return b.partidos_jugados - a.partidos_jugados;
       case "minutos":
-        return b.minutos_totales - a.minutos_totales
+        return b.minutos_jugados - a.minutos_jugados;
       default:
-        return 0
+        return 0;
     }
-  })
+  });
 
-  const totalGoles = estadisticas.reduce((sum, est) => sum + est.goles, 0)
-  const totalAsistencias = estadisticas.reduce((sum, est) => sum + est.asistencias, 0)
-  const totalTarjetasAmarillas = estadisticas.reduce((sum, est) => sum + est.tarjetas_amarillas, 0)
-  const totalTarjetasRojas = estadisticas.reduce((sum, est) => sum + est.tarjetas_rojas, 0)
+  const totalGoles = estadisticas.reduce((sum, est) => sum + est.goles, 0);
+  const totalAsistencias = estadisticas.reduce((sum, est) => sum + est.asistencias, 0);
+  const totalTarjetasAmarillas = estadisticas.reduce((sum, est) => sum + est.tarjetas_amarillas, 0);
+  const totalTarjetasRojas = estadisticas.reduce((sum, est) => sum + est.tarjetas_rojas, 0);
 
   if (loading) {
     return (
@@ -65,12 +73,37 @@ export default function EstadisticasPage() {
           <div className="text-lg">Cargando estadísticas...</div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Estadísticas del Equipo</h1>
+
+      {/* Selector de Categoría */}
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold mb-2">Filtrar por Categoría</h3>
+        <div className="flex gap-2">
+          <Button
+            variant={categoria === null ? "default" : "outline"}
+            onClick={() => setCategoria(null)}
+          >
+            Todas
+          </Button>
+          <Button
+            variant={categoria === "2014" ? "default" : "outline"}
+            onClick={() => setCategoria("2014")}
+          >
+            2014
+          </Button>
+          <Button
+            variant={categoria === "2015" ? "default" : "outline"}
+            onClick={() => setCategoria("2015")}
+          >
+            2015
+          </Button>
+        </div>
+      </div>
 
       {/* Resumen General */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -140,13 +173,13 @@ export default function EstadisticasPage() {
                 <tr className="border-b">
                   <th className="text-left p-2">Jugador</th>
                   <th className="text-left p-2">Posición</th>
+                  <th className="text-left p-2">Categoría</th>
                   <th className="text-center p-2">PJ</th>
                   <th className="text-center p-2">Min</th>
                   <th className="text-center p-2">Goles</th>
                   <th className="text-center p-2">Asist</th>
                   <th className="text-center p-2">TA</th>
                   <th className="text-center p-2">TR</th>
-                  <th className="text-center p-2">Prom Min</th>
                 </tr>
               </thead>
               <tbody>
@@ -155,7 +188,7 @@ export default function EstadisticasPage() {
                     <td className="p-2">
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-500">#{index + 1}</span>
-                        <span className="font-medium">{jugador.apellido_nombre}</span>
+                        <span className="font-medium">{jugador.jugador_nombre} {jugador.jugador_apellido}</span>
                       </div>
                     </td>
                     <td className="p-2">
@@ -163,8 +196,13 @@ export default function EstadisticasPage() {
                         {jugador.posicion}
                       </Badge>
                     </td>
+                    <td className="p-2">
+                      <Badge variant="outline" className="text-xs">
+                        {jugador.categoria}
+                      </Badge>
+                    </td>
                     <td className="text-center p-2">{jugador.partidos_jugados}</td>
-                    <td className="text-center p-2">{jugador.minutos_totales}</td>
+                    <td className="text-center p-2">{jugador.minutos_jugados}</td>
                     <td className="text-center p-2">
                       <span className="font-bold text-green-600">{jugador.goles}</span>
                     </td>
@@ -176,9 +214,6 @@ export default function EstadisticasPage() {
                     </td>
                     <td className="text-center p-2">
                       <span className="text-red-600">{jugador.tarjetas_rojas}</span>
-                    </td>
-                    <td className="text-center p-2">
-                      <span className="text-sm text-gray-600">{jugador.promedio_minutos.toFixed(0)}</span>
                     </td>
                   </tr>
                 ))}
@@ -194,5 +229,5 @@ export default function EstadisticasPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

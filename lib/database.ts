@@ -63,7 +63,6 @@ export interface Citacion {
   updated_at: string;
 }
 
-// Funciones para Jugadores
 export async function obtenerJugadores(categoria?: string): Promise<Jugador[]> {
   try {
     let query = db.select().from(schema.jugadores).where(eq(schema.jugadores.activo, true));
@@ -149,7 +148,6 @@ export async function eliminarJugador(id: number): Promise<void> {
   }
 }
 
-// Funciones para Partidos
 export async function obtenerPartidos(categoria?: string): Promise<Partido[]> {
   try {
     let query = db.select().from(schema.partidos);
@@ -220,7 +218,6 @@ export async function actualizarPartido(
   }
 }
 
-// Funciones para Estadísticas
 export async function obtenerEstadisticas(
   jugadorId?: number,
   partidoId?: number,
@@ -265,7 +262,6 @@ export async function crearEstadistica(
   }
 }
 
-// Funciones para Citaciones
 export async function obtenerCitaciones(partidoId?: number, categoria?: string): Promise<Citacion[]> {
   try {
     let query = db
@@ -321,7 +317,6 @@ export async function crearCitacion(
   }
 }
 
-// Función para obtener estadísticas generales
 export async function obtenerEstadisticasGenerales() {
   try {
     const [jugadores, partidos, estadisticas] = await Promise.all([

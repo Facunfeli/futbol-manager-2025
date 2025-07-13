@@ -1,17 +1,14 @@
-import { NextResponse } from "next/server";
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
-import * as schema from "@/db/schema";
+import { NextRequest, NextResponse } from "next/server";
+import { obtenerPartidos } from "@/database";
 
-const sql = neon(process.env.DATABASE_URL!);
-const db = drizzle(sql, { schema });
-
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const partidos = await db.select().from(schema.partidos);
+    const { searchParams } = new URL(request.url);
+    const categoria = searchParams.get("categoria");
+    const partidos = await obtenerPartidos(categoria || undefined);
     return NextResponse.json(partidos);
   } catch (error) {
-    console.error("Error fetching partidos:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error("Error in GET /api/partidos:", error);
+    return NextResponse.json({ error: "Error fetching partidos" }, { status: 500 });
   }
 }

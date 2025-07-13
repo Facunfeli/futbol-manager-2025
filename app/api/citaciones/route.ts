@@ -3,6 +3,7 @@ import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { obtenerCitaciones } from "@/lib/database";
 
 const sql = neon(process.env.DATABASE_URL!);
 const db = drizzle(sql, { schema });
@@ -38,6 +39,19 @@ export async function GET(request: NextRequest) {
 
     const citaciones = await query;
 
+    return NextResponse.json(citaciones);
+  } catch (error) {
+    console.error("Error fetching citaciones:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const categoria = searchParams.get("categoria");
+    const partidoId = searchParams.get("partidoId") ? Number(searchParams.get("partidoId")) : undefined;
+
+    const citaciones = await obtenerCitaciones(partidoId, categoria);
     return NextResponse.json(citaciones);
   } catch (error) {
     console.error("Error fetching citaciones:", error);
