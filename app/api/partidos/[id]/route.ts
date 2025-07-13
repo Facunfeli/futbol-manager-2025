@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { obtenerPartidoPorId, actualizarPartido } from "@/lib/database"
+import { obtenerPartidoPorId, actualizarPartido } from "@/db/database"
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {

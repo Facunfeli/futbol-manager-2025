@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { obtenerJugadores, obtenerJugadorPorId } from "@/database";
+import { obtenerJugadores, obtenerJugadorPorId } from "@/db/database";
 
 interface Jugador {
   id: number;
@@ -26,7 +26,7 @@ export async function generateStaticParams() {
 }
 
 export default async function JugadorPage({ params }: { params: { id: string } }) {
-  const jugador = await obtenerJugadorPorId(Number(params.id));
+  const jugador = await obtenerJugadorPorId(Number(params.id)) as Jugador | null;
   if (!jugador) notFound();
 
   return (

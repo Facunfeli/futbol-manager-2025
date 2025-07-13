@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { obtenerJugadores } from "@/database";
+import { obtenerJugadores } from "@/db/database";
 
 export async function GET(request: NextRequest) {
   try {

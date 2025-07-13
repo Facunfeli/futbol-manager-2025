@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"; // Corregido: usar / en lugar de \
-import { obtenerJugadorPorId, actualizarJugador, eliminarJugador } from "@/lib/database"; // Corregido: usar @
+import { obtenerJugadorPorId, actualizarJugador, eliminarJugador } from "@/db/database"; // Corregido: usar @
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
